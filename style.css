@@ -1,0 +1,35 @@
+.container{
+    display: grid;
+    grid-template-columns: repeat(50, 1fr);
+    grid-template-rows: repeat(25, 1fr);
+}
+
+
+.box{
+    height: 3vh;
+    border: solid 1px aquamarine;
+    border-radius: 50%;
+    transition: all 0.5s;
+    cursor: pointer;
+    color: white;
+}
+
+
+.ball{
+    border-radius: 50%;
+    background-color: red;
+    height: 3vh;
+    transition: all 0.5s;
+    text-align: center;
+    cursor: pointer;
+}
+
+#compteur{
+    color: red;
+    width: 30px;
+    font-weight: bold;
+    background-color: orange;
+    border-radius: 5px;
+    text-align: center;
+}
+
