@@ -3,6 +3,7 @@
     grid-template-columns: repeat(50, 1fr);
     grid-template-rows: repeat(25, 1fr);
     user-select:none;
+    color: white;
 }
 
 
@@ -11,8 +12,8 @@
     border: solid 1px aquamarine;
     border-radius: 50%;
     transition: all 0.5s;
+    text-align: center;
     cursor: pointer;
-    color: white;
 }
 
 
