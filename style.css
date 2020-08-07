@@ -35,3 +35,7 @@
     text-align: center;
 }
 
+.options{
+    display: flex;
+}
+

@@ -10,13 +10,12 @@ container.appendChild(div.cloneNode(true));
 
 let boxs  = document.querySelectorAll(".box");
 
-
 for (let box of boxs)
 box.onclick = () =>
 {
     box.className = (box.className == "box")? "ball" : "box";
     
-    let balls = document.querySelectorAll(".ball");
+    const balls = document.querySelectorAll(".ball");
     compteur.textContent = balls.length;
     let count = 1;
     for (let ball of balls)
@@ -38,7 +37,7 @@ document.onmousemove = () => {
             if(down)
             {
                 box.classList.add("ball");
-                let balls = document.querySelectorAll(".ball");
+                const balls = document.querySelectorAll(".ball");
                 compteur.textContent = balls.length;
         
                 let count = 1;
@@ -51,6 +50,21 @@ document.onmousemove = () => {
         }
     }
 };
+
+
+reset.onclick = () => {
+    const balls = document.querySelectorAll(".ball");
+    compteur.textContent = 0;
+
+    for(let ball of balls)
+    {
+        ball.className = "box";
+    }
+
+}
+
+
+
 
 
 //*************Service Worker ******************/
