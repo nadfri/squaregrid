@@ -27,7 +27,30 @@ box.onclick = () =>
 }
 
 
-
+let down = false;
+document.onmousedown = () => down = true;
+document.onmouseup   = () => down = false;
+document.onmousemove = () => {
+    for(let box of boxs)
+    {
+        box.onmousemove = () =>
+        {
+            if(down)
+            {
+                box.classList.add("ball");
+                let balls = document.querySelectorAll(".ball");
+                compteur.textContent = balls.length;
+        
+                let count = 1;
+                for (let ball of balls)
+                {
+                    ball.textContent = count;
+                    count++;
+                }
+            }
+        }
+    }
+};
 
 
 /*** */
