@@ -1,7 +1,7 @@
 importScripts('https://storage.googleapis.com/workbox-cdn/releases/5.1.2/workbox-sw.js');
 
 if (workbox) {
-  console.log(`WorkBox of paires loaded🎉`);
+  console.log(`WorkBox of squaregrid loaded🎉`);
   workbox.routing.registerRoute(
     new RegExp('/*'), //cached all files
     new workbox.strategies.StaleWhileRevalidate()
