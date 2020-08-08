@@ -11,7 +11,7 @@ container.appendChild(div.cloneNode(true));
 let boxs  = document.querySelectorAll(".box");
 
 for (let box of boxs)
-box.onclick = () =>
+box.onmousedown = () =>
 {
     box.className = (box.className == "box")? "ball" : "box";
     
@@ -32,11 +32,11 @@ document.onmouseup   = () => down = false;
 document.onmousemove = () => {
     for(let box of boxs)
     {
-        box.onmousemove = () =>
+        box.onmouseenter = () =>
         {
             if(down)
             {
-                box.classList.add("ball");
+                box.className = (box.className == "box")? "ball" : "box";
                 const balls = document.querySelectorAll(".ball");
                 compteur.textContent = balls.length;
         
