@@ -4,11 +4,13 @@ const div = document.createElement("div");
 div.className = "box";
 for(let i=0;i<1250;i++) container.appendChild(div.cloneNode(true));
 const boxs  = document.querySelectorAll(".box");
-
+let state;
 //Gestion du clic
 function handlerBox(box)
 {
-    box.className = (box.className == "box")? "ball" : "box";
+    box.className = (state == "box")? "ball":"box";
+    
+    //box.className = (box.className == "box")? "ball" : "box";
     
     const balls = document.querySelectorAll(".ball");
     compteur.textContent = balls.length;
@@ -25,7 +27,11 @@ for (let box of boxs) box.onmousedown = () => handlerBox(box);
 
 //Gestion de l'event mouse enter + mousedown
 let down = false;
-document.onmousedown = () => down = true;
+document.onmousedown = (e) => {
+    down = true; 
+    state = e.target.className;
+};
+
 document.onmouseup   = () => down = false;
 for(let box of boxs) box.onmouseenter = () => {if(down) handlerBox(box)};
     

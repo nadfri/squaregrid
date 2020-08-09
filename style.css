@@ -10,7 +10,7 @@
 .box{
     height: 3vh;
     border: solid 1px aquamarine;
-    border-radius: 50%;
+    /* border-radius: 50%; */
     transition: all 0.5s;
     text-align: center;
     cursor: pointer;
@@ -18,7 +18,8 @@
 
 
 .ball{
-    border-radius: 50%;
+    /* border-radius: 50%; */
+    border: solid 1px aquamarine;
     background-color: red;
     height: 3vh;
     transition: all 0.5s;
@@ -38,4 +39,5 @@
 .options{
     display: flex;
 }
+
 
