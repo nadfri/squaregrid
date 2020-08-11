@@ -2,19 +2,21 @@
 //Creation de la Grille
 const div = document.createElement("div");
 div.className = "box";
-for(let i=0;i<1250;i++) container.appendChild(div.cloneNode(true));
+
+for(let i=0;i<1350;i++) container.appendChild(div.cloneNode(true));
+
 const boxs  = document.querySelectorAll(".box");
 let state;
-//Gestion du clic
+
+//Fonction de gestion des boxs
 function handlerBox(box)
 {
     box.className = (state == "box")? "ball":"box";
-    
     //box.className = (box.className == "box")? "ball" : "box";
-    
     const balls = document.querySelectorAll(".ball");
     compteur.textContent = balls.length;
     let count = 1;
+
     for (let ball of balls)
     {
         ball.textContent = count;
@@ -22,28 +24,23 @@ function handlerBox(box)
     }
 }
 
-//Ajout des events click sur toute les div "box"
-for (let box of boxs) box.onmousedown = () => handlerBox(box);
+//Gestion du clic
+for (let box of boxs) box.onclick = () => handlerBox(box);
 
-//Gestion de l'event mouse enter + mousedown
+//Gestion de l'event mousemove + mousedown
 let down = false;
-document.onmousedown = (e) => {
-    down = true; 
-    state = e.target.className;
-};
+document.onmousedown = (e) => {down = true; state = e.target.className;}; 
+//save state of first box
 
 document.onmouseup   = () => down = false;
-for(let box of boxs) box.onmouseenter = () => {if(down) handlerBox(box)};
-    
+
+for(let box of boxs) box.onmousemove = () => {if(down) handlerBox(box)};
 //Bouton Reset de la grille
-reset.onclick = () => {
+reset.onclick = () => 
+{
     const balls = document.querySelectorAll(".ball");
     compteur.textContent = 0;
-
-    for(let ball of balls)
-    {
-        ball.className = "box";
-    }
+    for(let ball of balls) ball.className = "box";
 };
 
 
