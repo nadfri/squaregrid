@@ -8,10 +8,10 @@
 
 
 .box{
-    height: 3vh;
+    height: 3.2vh;
     border: solid 1px aquamarine;
     /* border-radius: 50%; */
-    transition: all 0.5s;
+    transition: all 0.2s;
     text-align: center;
     cursor: pointer;
 }
@@ -21,8 +21,8 @@
     /* border-radius: 50%; */
     border: solid 1px aquamarine;
     background-color: red;
-    height: 3vh;
-    transition: all 0.5s;
+    height: 3.2vh;
+    transition: all 0.25s;
     text-align: center;
     cursor: pointer;
 }
@@ -33,11 +33,17 @@
     font-weight: bold;
     background-color: orange;
     border-radius: 5px;
-    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .options{
     display: flex;
+}
+
+button{
+    width: 100%;
 }
 
 
