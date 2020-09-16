@@ -3,7 +3,7 @@
 const div = document.createElement("div");
 div.className = "box";
 
-for(let i=0;i<1350;i++) container.appendChild(div.cloneNode(true));
+for(let i=0;i<2280;i++) container.appendChild(div.cloneNode(true));
 
 const boxs  = document.querySelectorAll(".box");
 let state;

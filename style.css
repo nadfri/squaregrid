@@ -1,30 +1,31 @@
+*{
+    margin:0;
+    padding: 0;
+}
 .container{
+    width: 100vw;
+    height: 95vh;
     display: grid;
-    grid-template-columns: repeat(50, 1fr);
-    grid-template-rows: repeat(27, 1fr);
+    grid-template-columns: repeat(60, 1fr);
+    grid-template-rows: repeat(38, 1fr);
     user-select:none;
     color: white;
 }
 
-
-.box{
-    height: 3.2vh;
-    border: solid 1px aquamarine;
-    /* border-radius: 50%; */
-    transition: all 0.2s;
-    text-align: center;
+.box,.ball{
+    font-size: 0.9vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     cursor: pointer;
+    transition: all 0.2s;
+    border: solid 1px aquamarine;
 }
-
 
 .ball{
     /* border-radius: 50%; */
-    border: solid 1px aquamarine;
     background-color: red;
-    height: 3.2vh;
-    transition: all 0.25s;
-    text-align: center;
-    cursor: pointer;
+
 }
 
 #compteur{
