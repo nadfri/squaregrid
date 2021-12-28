@@ -20,7 +20,11 @@ function handlerBox(box)
     for (let ball of balls)
     {
         ball.textContent = count;
+        if(primes.includes(count)) 
+        ball.classList.add("prime");
+        else ball.classList.remove("prime");
         count++;
+    
     }
 }
 
@@ -44,12 +48,3 @@ reset.onclick = () =>
 };
 
 
-
-//*************Service Worker ******************/
-//Register service worker to control making site work offline
-if('serviceWorker' in navigator)
-{
-	navigator.serviceWorker
-			 .register('/squaregrid/sw.js', {scope: '/squaregrid/'})
-			 .then(function() { console.log('Service Worker for squaregrid Registered'); });
-}

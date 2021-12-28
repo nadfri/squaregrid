@@ -25,7 +25,10 @@
 .ball{
     /* border-radius: 50%; */
     background-color: red;
+}
 
+.prime{
+    background-color: blue;
 }
 
 #compteur{
