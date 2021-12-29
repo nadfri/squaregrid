@@ -27,8 +27,9 @@ const updateDisplay = () => {
 
   for (let ball of balls) {
     ball.textContent = count;
-    if (primes.includes(Math.abs(count))) ball.classList.add("prime");
-    else ball.classList.remove("prime");
+    if (primes.includes(Math.abs(count))) ball.className="ball prime";
+    else if((Math.abs(count)**0.5)%1==0) ball.className="ball square";
+    else ball.className = "ball";
     count++;
   }
 };
@@ -69,3 +70,5 @@ reset.onclick = () => {
 
 //Delete SW
 navigator.serviceWorker.getRegistrations().then( function(registrations) { for(let registration of registrations) { registration.unregister(); } }); 
+
+//Fonction de calcul des nombres premiers

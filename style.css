@@ -47,6 +47,10 @@ body {
   background-color: blue;
 }
 
+.square{
+  background-color: green;
+}
+
 .compteur {
   color: red;
   background-color: orange;
