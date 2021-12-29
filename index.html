@@ -1,24 +1,31 @@
 <!DOCTYPE html>
 <html lang="fr">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Grille de Factorisation</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css" />
     <script defer src="script.js"></script>
     <script defer src="primes.js"></script>
+  </head>
 
-</head>
-
-<body>
-    <div class="container" id="container">
-    </div>
+  <body>
+    <div class="container" id="container"></div>
 
     <div class="options">
-        <div id="compteur">0</div><button id="reset">RESET</button>
+      <div class="compteur">
+        <span>Total:</span>
+        <span id="compteur">0</span>
+      </div>
+
+      <div class="container-input">
+        <label for="init">INIT:</label>
+        <button id="moins">-</button>
+        <input type="text" placeholder="Init" id="init" />
+        <button id="plus">+</button>
+      </div>
+
+      <button id="reset">RESET</button>
     </div>
-
-</body>
-
+  </body>
 </html>

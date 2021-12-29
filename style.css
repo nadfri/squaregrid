@@ -1,53 +1,74 @@
-*{
-    margin:0;
-    padding: 0;
-}
-.container{
-    width: 100vw;
-    height: 95vh;
-    display: grid;
-    grid-template-columns: repeat(60, 1fr);
-    grid-template-rows: repeat(38, 1fr);
-    user-select:none;
-    color: white;
+* {
+  margin: 0;
+  padding: 0;
 }
 
-.box,.ball{
-    font-size: 0.9vw;
+html,body{
+    height: 100%;
     display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    transition: all 0.2s;
-    border: solid 1px aquamarine;
+    flex-direction: column;
+}
+.container {
+    flex:1;
+  display: grid;
+  grid-template-columns: repeat(60, 1fr);
+  grid-template-rows: repeat(38, 1fr);
+  user-select: none;
+  color: white;
 }
 
-.ball{
-    /* border-radius: 50%; */
-    background-color: red;
+.box,
+.ball {
+  font-size: 0.9vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: solid 1px aquamarine;
 }
 
-.prime{
-    background-color: blue;
+.ball {
+  /* border-radius: 50%; */
+  background-color: red;
 }
 
-#compteur{
-    color: red;
-    width: 30px;
-    font-weight: bold;
-    background-color: orange;
+.prime {
+  background-color: blue;
+}
+
+.compteur {
+  color: red;
+  background-color: orange;
+  border-radius: 5px;
+  padding: 5px 20px;
+}
+
+.options {
+  padding: 2px;
+  display: flex;
+  justify-content: space-around;
+  background-color: cadetblue;
+}
+
+
+.container-input {
     border-radius: 5px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    background-color: #8897ed;
+    padding: 5px;
 }
 
-.options{
-    display: flex;
+#reset {
+  width: 100px;
 }
 
-button{
-    width: 100%;
+#moins,#plus{
+    width: 20px;
 }
-
-
+input {
+  border: none;
+  width: 50px;
+  color: blue;
+  outline: none;
+  text-align: center;
+}
