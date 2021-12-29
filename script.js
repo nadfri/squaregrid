@@ -9,7 +9,9 @@ const boxs = document.querySelectorAll(".box");
 let state;
 
 //scroll to center of page
-window.scrollTo(1400, 0);
+setTimeout(()=>window.scrollTo({
+  left:750,
+}),200);
 
 //Fonction de gestion des boxs
 function handlerBox(box) {

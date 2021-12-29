@@ -3,6 +3,9 @@
   padding: 0;
 }
 
+body{
+  animation: fadeIn 1s;
+}
 
 .container {
   display: grid;
@@ -11,6 +14,17 @@
   user-select: none;
   color: white;
 }
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+  
+
 
 .box,
 .ball {
