@@ -60,3 +60,8 @@ reset.onclick = () => {
   compteur.textContent = 0;
   for (let ball of balls) ball.className = "box";
 };
+
+
+
+//Delete SW
+navigator.serviceWorker.getRegistrations().then( function(registrations) { for(let registration of registrations) { registration.unregister(); } }); 
