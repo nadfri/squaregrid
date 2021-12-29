@@ -3,15 +3,19 @@
 const div = document.createElement("div");
 div.className = "box";
 
-for (let i = 0; i < 2280; i++) container.appendChild(div.cloneNode(true));
+for (let i = 0; i < 5000; i++) container.appendChild(div.cloneNode(true));
 
 const boxs = document.querySelectorAll(".box");
 let state;
+
+//scroll to center of page
+window.scrollTo(1400, 0);
 
 //Fonction de gestion des boxs
 function handlerBox(box) {
   box.className = state == "box" ? "ball" : "box";
   updateDisplay();
+
 }
 
 const updateDisplay = () => {
@@ -60,8 +64,6 @@ reset.onclick = () => {
   compteur.textContent = 0;
   for (let ball of balls) ball.className = "box";
 };
-
-
 
 //Delete SW
 navigator.serviceWorker.getRegistrations().then( function(registrations) { for(let registration of registrations) { registration.unregister(); } }); 
