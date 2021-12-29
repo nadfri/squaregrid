@@ -3,7 +3,7 @@
   padding: 0;
 }
 
-body{
+body {
   animation: fadeIn 1s;
 }
 
@@ -23,8 +23,6 @@ body{
     opacity: 1;
   }
 }
-  
-
 
 .box,
 .ball {
@@ -58,33 +56,34 @@ body{
 
 .options {
   position: fixed;
-  bottom:0;
+  bottom: 0;
   left: 0;
   right: 0;
-  padding: 2px;
+  padding: 5px;
   display: flex;
   justify-content: space-around;
   background-color: cadetblue;
 }
 
-
 .container-input {
-    border-radius: 5px;
-    background-color: #8897ed;
-    padding: 5px;
+  border-radius: 5px;
+  background-color: #8897ed;
+  padding: 5px;
 }
 
 #reset {
   width: 100px;
 }
 
-#moins,#plus{
-    width: 20px;
+#moins,
+#plus {
+  width: 20px;
 }
 input {
   border: none;
   width: 50px;
-  color: blue;
+  color: red;
   outline: none;
   text-align: center;
+  font-weight: bold;
 }
