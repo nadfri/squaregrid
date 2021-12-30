@@ -23,7 +23,7 @@ function handlerBox(box) {
 const updateDisplay = () => {
   const balls = document.querySelectorAll(".ball");
   compteur.textContent = balls.length;
-  let count = init.value || 1;
+  let count = init.valueAsNumber || 1;
 
   for (let ball of balls) {
     ball.textContent = count;

@@ -4,6 +4,7 @@
 }
 
 body {
+  font-family: Roboto;
   animation: fadeIn 1s;
 }
 
@@ -27,7 +28,7 @@ body {
 .box,
 .ball {
   font-size: 12px;
-  min-width: 27px;
+  min-width: 30px;
   width: fit-content;
   aspect-ratio: 1;
   display: flex;
@@ -52,6 +53,8 @@ body {
 }
 
 .compteur {
+  display: flex;
+  align-items: center;
   color: red;
   background-color: orange;
   border-radius: 5px;
@@ -69,11 +72,6 @@ body {
   background-color: cadetblue;
 }
 
-.container-input {
-  border-radius: 5px;
-  background-color: #8897ed;
-  padding: 5px;
-}
 
 #reset {
   width: 100px;
@@ -81,13 +79,38 @@ body {
 
 #moins,
 #plus {
-  width: 20px;
+  width: 30px;
+  height: 30px;
+  font-size: 1.5rem;
 }
+
+.container-input {
+  display: flex;
+  align-items: center;
+  border-radius: 5px;
+  background-color: #8897ed;
+  padding: 5px;
+}
+
 input {
   border: none;
   width: 50px;
+  height: 28px;
   color: red;
   outline: none;
   text-align: center;
   font-weight: bold;
+  font-size: 1rem;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
 }
