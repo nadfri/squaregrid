@@ -1,4 +1,10 @@
 "use strict";
+
+
+
+
+
+
 //Creation de la Grille
 const div = document.createElement("div");
 div.className = "box";
@@ -9,26 +15,30 @@ const boxs = document.querySelectorAll(".box");
 let state;
 
 //scroll to center of page
-setTimeout(()=>window.scrollTo({
-  left:750,
-}),200);
+setTimeout(
+  () =>
+    window.scrollTo({
+      left: 750,
+    }),
+  200
+);
 
 //Fonction de gestion des boxs
 function handlerBox(box) {
   box.className = state == "box" ? "ball" : "box";
   updateDisplay();
-
 }
 
 const updateDisplay = () => {
+  console.log("update")
   const balls = document.querySelectorAll(".ball");
   compteur.textContent = balls.length;
-  let count = init.valueAsNumber || 1;
+  let count = init.value || 1;
 
   for (let ball of balls) {
     ball.textContent = count;
-    if (primes.includes(Math.abs(count))) ball.className="ball prime";
-    else if((Math.abs(count)**0.5)%1==0) ball.className="ball square";
+    if (primes.includes(Math.abs(count))) ball.className = "ball prime";
+    else if (Math.abs(count) ** 0.5 % 1 == 0) ball.className = "ball square";
     else ball.className = "ball";
     count++;
   }
@@ -69,6 +79,10 @@ reset.onclick = () => {
 };
 
 //Delete SW
-navigator.serviceWorker.getRegistrations().then( function(registrations) { for(let registration of registrations) { registration.unregister(); } }); 
+navigator.serviceWorker.getRegistrations().then(function (registrations) {
+  for (let registration of registrations) {
+    registration.unregister();
+  }
+});
 
-//Fonction de calcul des nombres premiers
+
