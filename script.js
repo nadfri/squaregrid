@@ -1,10 +1,5 @@
 "use strict";
 
-
-
-
-
-
 //Creation de la Grille
 const div = document.createElement("div");
 div.className = "box";
@@ -30,14 +25,17 @@ function handlerBox(box) {
 }
 
 const updateDisplay = () => {
-  console.log("update")
+  console.log("update");
   const balls = document.querySelectorAll(".ball");
   compteur.textContent = balls.length;
   let count = init.value || 1;
 
   for (let ball of balls) {
     ball.textContent = count;
-    if (primes.includes(Math.abs(count))) ball.className = "ball prime";
+    if (count == nb_p.value) ball.className = "ball nxq";
+    else if (count == nb_q.value) ball.className = "ball nxq";
+    else if (count == pq.textContent) ball.className = "ball nxq";
+    else if (primes.includes(Math.abs(count))) ball.className = "ball prime";
     else if (Math.abs(count) ** 0.5 % 1 == 0) ball.className = "ball square";
     else ball.className = "ball";
     count++;
@@ -75,8 +73,20 @@ for (let box of boxs)
 reset.onclick = () => {
   const balls = document.querySelectorAll(".ball");
   compteur.textContent = 0;
+  nb_p.value = "";
+  nb_q.value = "";
+  init.value = "";
   for (let ball of balls) ball.className = "box";
 };
+
+//Gestion p*q
+const multiplication = (p, q) => {
+  pq.textContent = (+p || 1) * (+q || 1);
+  updateDisplay();
+};
+
+nb_p.oninput = () => multiplication(nb_p.value, nb_q.value);
+nb_q.oninput = () => multiplication(nb_p.value, nb_q.value);
 
 //Delete SW
 navigator.serviceWorker.getRegistrations().then(function (registrations) {
@@ -84,5 +94,3 @@ navigator.serviceWorker.getRegistrations().then(function (registrations) {
     registration.unregister();
   }
 });
-
-

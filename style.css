@@ -52,6 +52,10 @@ body {
   background-color: green;
 }
 
+.nxq{
+  background-color: purple;
+}
+
 .compteur {
   display: flex;
   align-items: center;
@@ -89,7 +93,7 @@ body {
   align-items: center;
   border-radius: 5px;
   background-color: #8897ed;
-  padding: 5px;
+  padding: 5px 10px;
 }
 
 input {
@@ -113,4 +117,22 @@ input::-webkit-inner-spin-button {
 /* Firefox */
 input[type=number] {
   -moz-appearance: textfield;
+}
+
+.container-pq{
+  display: flex;
+  align-items: center;
+  border-radius: 5px;
+  background-color: #8897ed;
+  padding: 5px 10px;
+}
+
+.container-pq input{
+  color: purple;
+}
+
+#pq{
+  min-width: 10px;
+  font-weight: bold;
+  color: purple;
 }
