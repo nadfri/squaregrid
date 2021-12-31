@@ -75,6 +75,7 @@ reset.onclick = () => {
   compteur.textContent = 0;
   nb_p.value = "";
   nb_q.value = "";
+  pq.textContent = ""
   init.value = "";
   for (let ball of balls) ball.className = "box";
 };
