@@ -25,7 +25,6 @@ function handlerBox(box) {
 }
 
 const updateDisplay = () => {
-  console.log("update");
   const balls = document.querySelectorAll(".ball");
   compteur.textContent = balls.length;
   let count = init.value || 1;
@@ -76,7 +75,7 @@ reset.onclick = () => {
   nb_p.value = "";
   nb_q.value = "";
   pq.textContent = ""
-  init.value = "";
+  init.value = 1;
   for (let ball of balls) ball.className = "box";
 };
 
