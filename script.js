@@ -1,5 +1,4 @@
 "use strict";
-
 //Creation de la Grille
 const div = document.createElement("div");
 div.className = "box";
@@ -34,6 +33,7 @@ const updateDisplay = () => {
     if (count == nb_p.value) ball.className = "ball nxq";
     else if (count == nb_q.value) ball.className = "ball nxq";
     else if (count == pq.textContent) ball.className = "ball nxq";
+    else if (count == n.value && n.value!=="") ball.className = "ball n";
     else if (primes.includes(Math.abs(count))) ball.className = "ball prime";
     else if (Math.abs(count) ** 0.5 % 1 == 0) ball.className = "ball square";
     else ball.className = "ball";
@@ -72,9 +72,9 @@ for (let box of boxs)
 reset.onclick = () => {
   const balls = document.querySelectorAll(".ball");
   compteur.textContent = 0;
-  nb_p.value = "";
-  nb_q.value = "";
-  pq.textContent = ""
+  // nb_p.value = "";
+  // nb_q.value = "";
+  // pq.textContent = "";
   init.value = 1;
   for (let ball of balls) ball.className = "box";
 };
@@ -85,12 +85,8 @@ const multiplication = (p, q) => {
   updateDisplay();
 };
 
+
 nb_p.oninput = () => multiplication(nb_p.value, nb_q.value);
 nb_q.oninput = () => multiplication(nb_p.value, nb_q.value);
 
-//Delete SW
-navigator.serviceWorker.getRegistrations().then(function (registrations) {
-  for (let registration of registrations) {
-    registration.unregister();
-  }
-});
+

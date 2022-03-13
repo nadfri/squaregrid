@@ -8,6 +8,10 @@ body {
   animation: fadeIn 1s;
 }
 
+input{
+  border-radius: 5px;
+}
+
 .container {
   display: grid;
   grid-template-columns: repeat(100, 1fr);
@@ -48,12 +52,18 @@ body {
   background-color: blue;
 }
 
-.square{
+.square {
   background-color: green;
 }
 
-.nxq{
+.nxq {
   background-color: purple;
+}
+
+.n {
+  background-color: gold;
+  color:black;
+  font-weight: bold;
 }
 
 .compteur {
@@ -75,7 +85,6 @@ body {
   justify-content: space-around;
   background-color: cadetblue;
 }
-
 
 #reset {
   width: 100px;
@@ -115,11 +124,11 @@ input::-webkit-inner-spin-button {
 }
 
 /* Firefox */
-input[type=number] {
+input[type="number"] {
   -moz-appearance: textfield;
 }
 
-.container-pq{
+.container-pq {
   display: flex;
   align-items: center;
   border-radius: 5px;
@@ -127,12 +136,18 @@ input[type=number] {
   padding: 5px 10px;
 }
 
-.container-pq input{
+.container-pq input {
   color: purple;
 }
 
-#pq{
+#pq {
   min-width: 10px;
   font-weight: bold;
   color: purple;
+}
+
+#n {
+  font-weight: bold;
+  color:black;
+  background-color: gold;
 }
