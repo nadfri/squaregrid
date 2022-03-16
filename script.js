@@ -45,6 +45,7 @@ const updateDisplay = () => {
 for (let box of boxs) box.onclick = () => handlerBox(box);
 //Gestion du init
 init.oninput = updateDisplay;
+n.oninput = updateDisplay;
 moins.onclick = () => {
   init.value--;
   updateDisplay();
