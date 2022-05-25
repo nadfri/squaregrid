@@ -40,12 +40,13 @@ input{
   align-items: center;
   cursor: pointer;
   transition: all 0.2s;
-  border: solid 1px aquamarine;
+  border-bottom: 1px solid #ddd;
+  border-right: 1px solid #ddd;
 }
 
 .ball {
   /* border-radius: 50%; */
-  background-color: red;
+  background-color: #9e9e9e;
 }
 
 .prime {
