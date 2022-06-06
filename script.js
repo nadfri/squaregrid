@@ -28,6 +28,7 @@ const updateDisplay = () => {
   compteur.textContent = balls.length;
   let count = init.value || 1;
 
+
   for (let ball of balls) {
     ball.textContent = count;
     if (count == nb_p.value) ball.className = "ball nxq";
@@ -37,7 +38,10 @@ const updateDisplay = () => {
     else if (primes.includes(Math.abs(count))) ball.className = "ball prime";
     else if (Math.abs(count) ** 0.5 % 1 == 0) ball.className = "ball square";
     else ball.className = "ball";
+
+
     count++;
+    count == 0 && count++;
   }
 };
 
@@ -48,10 +52,12 @@ init.oninput = updateDisplay;
 n.oninput = updateDisplay;
 moins.onclick = () => {
   init.value--;
+  init.value == 0 && init.value--;
   updateDisplay();
 };
 plus.onclick = () => {
   init.value++;
+  init.value == 0 && init.value++;
   updateDisplay();
 };
 
