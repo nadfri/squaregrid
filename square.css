@@ -99,6 +99,11 @@ button:disabled {
     font-size: 1.1rem;
   }
 
+  #inputN {
+    font-size: 1rem;
+    width: calc(100% - 190px);
+  }
+
   button {
     width: 100%;
   }
