@@ -10,7 +10,7 @@ body {
 body {
   background-color: #35454c;
   color: #e1a8a8;
-  font-size: 1.3rem;
+  font-size: 1.5rem;
   font-family: monospace;
   margin: 0;
   display: flex;
@@ -46,7 +46,7 @@ input {
 }
 
 #inputN {
-  width: calc(100% - 210px);
+  width: calc(100% - 220px);
 }
 
 a {
