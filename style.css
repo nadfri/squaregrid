@@ -152,3 +152,12 @@ input[type="number"] {
   color:black;
   background-color: gold;
 }
+
+a{
+  text-decoration: none;
+  background-color: yellowgreen;
+  padding: 10px;
+  color: purple;
+  border-radius: 5px;
+  font-weight: bold;
+}

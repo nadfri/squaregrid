@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Find p & q by Square</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <form id="form">
+      <div class="container_pq">
+        <label>p: <input type="number" id="inputP" value="100037" /></label>
+        <div>x</div>
+        <label>q: <input type="number" id="inputQ" value="99988961" /></label>
+      </div>
+
+      <div class="container_N">
+        <div>N: <span id="spanN"></span></div>
+
+        <div>OR</div>
+
+        <label>N: <input type="number" id="inputN" placeholder="Choose N" /></label> x
+        <input type="number" class="coef" id="inputCoef" value="1" placeholder="1" />
+        ^
+        <input
+          type="number"
+          class="coef"
+          id="inputPowCoef"
+          min="2"
+          value="2"
+          placeholder="2"
+        />
+      </div>
+
+      <div>SAFE INTEGER: <span id="spanSafe"></span></div>
+
+      <div>Nombre de calculs: <span id="spanCalcul">__</span></div>
+
+      <div class="container_carre">
+        <div>Carré Y= <span id="spanY">( _ )</span>²</div>
+        <div>Carré X= <span id="spanX">( _ )</span>²</div>
+      </div>
+
+      <div class="container_xy">
+        <div>N + X² = Y²</div>
+        <div>
+          <span id="spanN2">N</span>
+          +
+          <span id="spanX2">X</span>² = <span id="spanY2">Y</span>²
+        </div>
+      </div>
+
+      <div class="container_result">
+        <div>p = ( Y - X ) = <span id="spanP">?</span></div>
+        <div>q = ( Y + X ) = <span id="spanQ">?</span></div>
+      </div>
+
+      <div><span id="error">Plus de 100 000 000 de calculs...</span></div>
+
+      <button id="btnFind">Calculate</button>
+    </form>
+
+    <a href="/">TO GRID</a>
+  </body>
+</html>
