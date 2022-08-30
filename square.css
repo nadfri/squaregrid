@@ -36,7 +36,7 @@ span {
 }
 
 input {
-  width: calc(100% - 40px);
+  width: calc(100% - 45px);
 
   border: none;
   border-bottom: 1px solid yellowgreen;
@@ -101,7 +101,11 @@ button:disabled {
 
   #inputN {
     font-size: 1rem;
-    width: calc(100% - 190px);
+    width: calc(100% - 180px);
+  }
+  
+  .coef {
+  width: 40px;
   }
 
   button {
