@@ -17,6 +17,14 @@ body {
   flex-direction: column;
 }
 
+.container{
+  display: flex;
+}
+
+.container input:not(.coef){
+  flex: 1;
+}
+
 form {
   display: flex;
   flex-direction: column;
@@ -42,16 +50,14 @@ input::-webkit-inner-spin-button {
 }
 
 /* Firefox */
-input[type=number] {
+input[type='number'] {
   -moz-appearance: textfield;
 }
 
 input {
-  width: calc(100% - 45px);
-
   border: none;
   border-bottom: 1px solid yellowgreen;
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   background-color: rgba(0, 0, 0, 0.1);
   color: white;
 }
@@ -66,7 +72,7 @@ a {
 }
 
 .coef {
-  width: 30px;
+  width: 40px;
   text-align: center;
 }
 
@@ -108,14 +114,6 @@ button:disabled {
   button,
   input {
     font-size: 1.1rem;
-  }
-
-  #inputN {
-    font-size: 1rem;
-  }
-  
-  .coef {
-  width: 40px;
   }
 
   button {

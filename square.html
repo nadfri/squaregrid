@@ -11,31 +11,35 @@
   <body>
     <form id="form">
       <div class="container_pq">
-        <label>p: <input type="number" id="inputP" value="1999" /></label>
-        <div>x</div>
-        <label>q: <input type="number" id="inputQ" value="10037" /></label>
+        <div class="container">p: <input type="number" id="inputP" value="1999" /></div>
+
+        <span>x</span>
+
+        <div class="container">q: <input type="number" id="inputQ" value="10037" /></div>
       </div>
 
       <div class="container_N">
         <div>N: <span id="spanN"></span></div>
 
-        <div>OR</div>
+        <p>OR</p>
 
-        <label>N: <input type="number" id="inputN" placeholder="Choose N" /></label> x
-        <input
-          type="number"
-          class="coef"
-          id="inputCoef"
-          value="1"
-          placeholder="1"
-        />^<input
-          type="number"
-          class="coef"
-          id="inputPowCoef"
-          min="2"
-          value="2"
-          placeholder="2"
-        />
+        <div class="container">
+          N: <input type="number" id="inputN" placeholder="Choose N" /> x
+          <input
+            type="number"
+            class="coef"
+            id="inputCoef"
+            value="1"
+            placeholder="1"
+          />^<input
+            type="number"
+            class="coef"
+            id="inputPowCoef"
+            min="2"
+            value="2"
+            placeholder="2"
+          />
+        </div>
       </div>
 
       <div>SAFE INTEGER: <span id="spanSafe"></span></div>
