@@ -15,7 +15,7 @@ const resetButton = document.getElementById('reset');
 const pyramideButton = document.getElementById('pyramide');
 
 // Dimensions de la grille et des cellules
-const columns = 100;
+const columns = 150;
 const rows = 100;
 const cellSize = 20;
 
@@ -49,10 +49,6 @@ const primesSet = new Set(primes); // primes doit être défini dans primes.js
 // Fonction pour dessiner la grille
 function drawGrid() {
   context.clearRect(0, 0, canvasElement.width, canvasElement.height);
-
-  context.font = `${cellSize / 2}px Arial`;
-  context.textAlign = 'center';
-  context.textBaseline = 'middle';
 
   // Dessiner le quadrillage
   context.strokeStyle = '#ddd';
@@ -94,6 +90,12 @@ function drawGrid() {
         // Dessiner la cellule
         context.fillStyle = fillColor;
         context.fillRect(posX, posY, cellSize, cellSize);
+
+        // Adapter la taille de la police pour qu'elle tienne dans la case
+        const fontSize = Math.min(cellSize / 2, cellSize / (count.toString().length * 0.6));
+        context.font = `${fontSize}px Roboto`;
+        context.textAlign = 'center';
+        context.textBaseline = 'middle';
 
         // Afficher le numéro
         context.fillStyle = fillColor === 'gold' ? 'black' : 'white';
@@ -242,7 +244,7 @@ function generatePyramide() {
   // Réinitialiser la grille
   grid = grid.map((row) => row.map(() => 0));
 
-  const n = parseInt(nInputElement.value) || 100;
+  const n = Math.min(parseInt(nInputElement.value) || 100,5000);
 
   let currentRow = 2; // La 3ème ligne (index 2)
   let currentCol = Math.floor(columns / 2); // Milieu de la rangée
