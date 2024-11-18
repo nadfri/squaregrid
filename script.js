@@ -14,41 +14,36 @@ const incrementButton = document.getElementById('increment');
 const resetButton = document.getElementById('reset');
 const pyramideButton = document.getElementById('pyramide');
 
-// Dimensions de la grille et des cellules
+/* Dimensions de la grille et des cellules*/
 const columns = 150;
 const rows = 80;
 const cellSize = 20;
-
-// Ajuster la taille du canvas
 canvasElement.width = columns * cellSize;
 canvasElement.height = rows * cellSize;
 
 // Création de la grille (tableau 2D)
-let grid = [];
-for (let y = 0; y < rows; y++) {
-  grid[y] = [];
-  for (let x = 0; x < columns; x++) {
-    grid[y][x] = 0; // 0: vide, 1: rempli
-  }
-}
+const grid = Array.from({ length: rows }, () => Array(columns).fill(0));
 
 // Variables pour l'interaction
 let isMouseDown = false;
 let cellState = 0;
-
-// Variables pour les calculs
-let startCount = parseInt(initInputElement.value) || 1;
-let nValue = parseInt(nInputElement.value) || null;
-let pValue = parseInt(pInputElement.value) || null;
-let qValue = parseInt(qInputElement.value) || null;
-let pqValue = null;
-
-// Chargement des nombres premiers
-const primesSet = new Set(primes); // primes doit être défini dans primes.js
+const primesSet = new Set(primes);
 
 // Fonction pour dessiner la grille
 function drawGrid() {
   context.clearRect(0, 0, canvasElement.width, canvasElement.height);
+
+  // Initialisation des variables
+  const nValue = parseInt(nInputElement.value) || null;
+  const pValue = parseInt(pInputElement.value) || null;
+  const qValue = parseInt(qInputElement.value) || null;
+  const pqValue = pValue * qValue;
+  pqDisplayElement.textContent = pqValue || '';
+
+  const countElements = grid.flat().filter((value) => value === 1).length;
+  counterElement.textContent = countElements;
+
+  let count = parseInt(initInputElement.value) ?? 1;
 
   // Dessiner le quadrillage
   context.strokeStyle = '#ddd';
@@ -69,7 +64,6 @@ function drawGrid() {
   for (let y = 0; y < rows; y++) {
     for (let x = 0; x < columns; x++) {
       if (grid[y][x] === 1) {
-        const count = getCount(x, y);
         const posX = x * cellSize;
         const posY = y * cellSize;
 
@@ -77,9 +71,7 @@ function drawGrid() {
         let fillColor = '#9e9e9e'; // Couleur par défaut
         if (count === nValue) {
           fillColor = 'gold';
-        } else if (count === pqValue) {
-          fillColor = 'purple';
-        } else if (count === pValue || count === qValue) {
+        } else if (count === pValue || count === qValue || count === pqValue) {
           fillColor = 'purple';
         } else if (primesSet.has(Math.abs(count))) {
           fillColor = 'blue';
@@ -92,7 +84,10 @@ function drawGrid() {
         context.fillRect(posX, posY, cellSize, cellSize);
 
         // Adapter la taille de la police pour qu'elle tienne dans la case
-        const fontSize = Math.min(cellSize / 2, cellSize / (count.toString().length * 0.6));
+        const fontSize = Math.min(
+          cellSize / 2,
+          cellSize / (count.toString().length * 0.6)
+        );
         context.font = `${fontSize}px Roboto`;
         context.textAlign = 'center';
         context.textBaseline = 'middle';
@@ -100,53 +95,18 @@ function drawGrid() {
         // Afficher le numéro
         context.fillStyle = fillColor === 'gold' ? 'black' : 'white';
         context.fillText(count, posX + cellSize / 2, posY + cellSize / 2);
+
+        // Incrémenter le compteur après chaque cellule remplie
+        count++;
       }
     }
   }
 }
-
-// Fonction pour obtenir le numéro de la cellule
-function getCount(x, y) {
-  let count = startCount;
-  for (let cy = 0; cy < rows; cy++) {
-    for (let cx = 0; cx < columns; cx++) {
-      if (grid[cy][cx] === 1) {
-        if (cy < y || (cy === y && cx <= x)) {
-          if (cy !== y || cx !== x) {
-            count++;
-          } else {
-            return count;
-          }
-        }
-      }
-    }
-  }
-  return count;
-}
-
-// Gestion des événements de souris
-canvasElement.addEventListener('mousedown', function (e) {
-  isMouseDown = true;
-  const { x, y } = getMousePos(e);
-  cellState = grid[y][x];
-  toggleCell(x, y);
-});
-
-canvasElement.addEventListener('mousemove', function (e) {
-  if (isMouseDown) {
-    const { x, y } = getMousePos(e);
-    toggleCell(x, y);
-  }
-});
-
-canvasElement.addEventListener('mouseup', function () {
-  isMouseDown = false;
-});
 
 // Fonction pour basculer l'état d'une cellule
 function toggleCell(x, y) {
   grid[y][x] = cellState === 0 ? 1 : 0;
-  updateDisplay();
+  drawGrid();
 }
 
 // Obtenir la position de la souris dans la grille
@@ -157,70 +117,17 @@ function getMousePos(evt) {
   return { x, y };
 }
 
-// Mettre à jour l'affichage (compteur, etc.)
-function updateDisplay() {
-  // Mise à jour du compteur
-  const count = grid.flat().filter((value) => value === 1).length;
-  counterElement.textContent = count;
-  drawGrid();
-}
-
-// Gestion des boutons et des entrées
-initInputElement.addEventListener('input', () => {
-  startCount = parseInt(initInputElement.value) || 1;
-  updateDisplay();
-});
-
-nInputElement.addEventListener('input', () => {
-  nValue = parseInt(nInputElement.value) || null;
-  updateDisplay();
-});
-
-decrementButton.onclick = () => {
-  initInputElement.value = parseInt(initInputElement.value) - 1;
-  startCount = parseInt(initInputElement.value) || 1;
-  updateDisplay();
-};
-
-incrementButton.onclick = () => {
-  initInputElement.value = parseInt(initInputElement.value) + 1;
-  startCount = parseInt(initInputElement.value) || 1;
-  updateDisplay();
-};
-
-resetButton.onclick = () => {
-  grid = grid.map((row) => row.map(() => 0));
+/*Réinitialiser la grille*/
+function reset() {
+  grid.forEach((row) => row.fill(0)); // Réinitialiser toutes les cellules à 0
   counterElement.textContent = 0;
   initInputElement.value = 1;
-  startCount = 1;
-  updateDisplay();
-};
+  nInputElement.value = '';
+  pInputElement.value = '';
+  qInputElement.value = '';
 
-pInputElement.addEventListener('input', () => {
-  pValue = parseInt(pInputElement.value) || null;
-  updatePQ();
-  updateDisplay();
-});
-
-qInputElement.addEventListener('input', () => {
-  qValue = parseInt(qInputElement.value) || null;
-  updatePQ();
-  updateDisplay();
-});
-
-function updatePQ() {
-  if (pValue && qValue) {
-    pqValue = pValue * qValue;
-    pqDisplayElement.textContent = pqValue;
-  } else {
-    pqValue = null;
-    pqDisplayElement.textContent = '';
-  }
+  drawGrid();
 }
-
-// Initialisation
-updatePQ();
-updateDisplay();
 
 function centerCanvas() {
   const offsetX = (canvasElement.width - window.innerWidth) / 2;
@@ -232,19 +139,12 @@ function centerCanvas() {
   });
 }
 
-// Attendre le chargement complet
-window.addEventListener('load', centerCanvas);
-
-// S'assurer que le canvas reste centré
-document.addEventListener('DOMContentLoaded', () => {
-  setTimeout(centerCanvas, 100); // Petit délai pour s'assurer que tout est chargé
-});
-
+/*Generer une pyramide de nombres*/
 function generatePyramide() {
   // Réinitialiser la grille
-  grid = grid.map((row) => row.map(() => 0));
+  grid.forEach((row) => row.fill(0));
 
-  const n = Math.min(parseInt(nInputElement.value) || 100,5000);
+  const n = Math.min(parseInt(nInputElement.value) || 100, 5000);
 
   let currentRow = 2; // La 3ème ligne (index 2)
   let currentCol = Math.floor(columns / 2); // Milieu de la rangée
@@ -263,9 +163,48 @@ function generatePyramide() {
     elementsInRow += 2;
   }
 
-  updateDisplay();
+  drawGrid();
   centerCanvas();
 }
 
-pyramideButton.onclick = generatePyramide;
+/* Gestion des événements*/
+canvasElement.addEventListener('mousedown', function (e) {
+  isMouseDown = true;
+  const { x, y } = getMousePos(e);
+  cellState = grid[y][x];
+  toggleCell(x, y);
+});
 
+canvasElement.addEventListener('mousemove', function (e) {
+  if (isMouseDown) {
+    const { x, y } = getMousePos(e);
+    toggleCell(x, y);
+  }
+});
+
+canvasElement.addEventListener('mouseup', function () {
+  isMouseDown = false;
+});
+
+pInputElement.addEventListener('input', drawGrid);
+qInputElement.addEventListener('input', drawGrid);
+nInputElement.addEventListener('input', drawGrid);
+initInputElement.addEventListener('input', drawGrid);
+
+window.addEventListener('load', centerCanvas);
+
+decrementButton.onclick = () => {
+  initInputElement.value = parseInt(initInputElement.value) - 1;
+  drawGrid();
+};
+
+incrementButton.onclick = () => {
+  initInputElement.value = parseInt(initInputElement.value) + 1;
+  drawGrid();
+};
+
+pyramideButton.onclick = generatePyramide;
+resetButton.onclick = reset;
+
+// Initialisation
+drawGrid();
