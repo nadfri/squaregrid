@@ -17,11 +17,11 @@ body {
   flex-direction: column;
 }
 
-.container{
+.container {
   display: flex;
 }
 
-.container input:not(.coef){
+.container input:not(.coef) {
   flex: 1;
 }
 
@@ -51,7 +51,7 @@ input::-webkit-inner-spin-button {
 
 /* Firefox */
 input[type='number'] {
-  -moz-appearance: textfield;
+  appearance: textfield;
 }
 
 input {

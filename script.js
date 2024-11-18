@@ -41,7 +41,6 @@ const updateDisplay = () => {
 
 
     count++;
-    count == 0 && count++;
   }
 };
 
@@ -52,12 +51,10 @@ init.oninput = updateDisplay;
 n.oninput = updateDisplay;
 moins.onclick = () => {
   init.value--;
-  init.value == 0 && init.value--;
   updateDisplay();
 };
 plus.onclick = () => {
   init.value++;
-  init.value == 0 && init.value++;
   updateDisplay();
 };
 
