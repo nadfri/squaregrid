@@ -4,11 +4,11 @@
 const canvasElement = document.getElementById('canvas');
 const context = canvasElement.getContext('2d');
 const counterElement = document.getElementById('counter');
-const initInputElement = document.getElementById('init');
-const nInputElement = document.getElementById('n');
-const pInputElement = document.getElementById('p');
-const qInputElement = document.getElementById('q');
-const pqDisplayElement = document.getElementById('pq');
+const initInput = document.getElementById('init');
+const nInput = document.getElementById('n');
+const pInput = document.getElementById('p');
+const qInput = document.getElementById('q');
+const pqElement = document.getElementById('pq');
 const decrementButton = document.getElementById('decrement');
 const incrementButton = document.getElementById('increment');
 const resetButton = document.getElementById('reset');
@@ -24,28 +24,9 @@ canvasElement.height = rows * cellSize;
 // Création de la grille (tableau 2D)
 const grid = Array.from({ length: rows }, () => Array(columns).fill(0));
 
-// Variables pour l'interaction
-let isMouseDown = false;
-let cellState = 0;
 const primesSet = new Set(primes);
 
-// Fonction pour dessiner la grille
 function drawGrid() {
-  context.clearRect(0, 0, canvasElement.width, canvasElement.height);
-
-  // Initialisation des variables
-  const nValue = parseInt(nInputElement.value) || null;
-  const pValue = parseInt(pInputElement.value) || null;
-  const qValue = parseInt(qInputElement.value) || null;
-  const pqValue = pValue * qValue;
-  pqDisplayElement.textContent = pqValue || '';
-
-  const countElements = grid.flat().filter((value) => value === 1).length;
-  counterElement.textContent = countElements;
-
-  let count = parseInt(initInputElement.value) ?? 1;
-
-  // Dessiner le quadrillage
   context.strokeStyle = '#ddd';
   for (let y = 0; y <= rows; y++) {
     context.beginPath();
@@ -59,6 +40,26 @@ function drawGrid() {
     context.lineTo(x * cellSize, rows * cellSize);
     context.stroke();
   }
+}
+
+// Fonction pour dessiner la grille
+function updateGrid() {
+  context.clearRect(0, 0, canvasElement.width, canvasElement.height);
+
+  // Initialisation des variables
+  const nValue = parseInt(nInput.value) || null;
+  const pValue = parseInt(pInput.value) || null;
+  const qValue = parseInt(qInput.value) || null;
+  const pqValue = pValue * qValue;
+
+  const countElements = grid.flat().filter((value) => value === 1).length;
+  counterElement.textContent = countElements;
+  pqElement.textContent = pqValue || '';
+
+  let count = parseInt(initInput.value) ?? 1;
+
+  // Dessiner le quadrillage
+  drawGrid();
 
   // Parcourir la grille pour dessiner les cellules remplies
   for (let y = 0; y < rows; y++) {
@@ -103,12 +104,6 @@ function drawGrid() {
   }
 }
 
-// Fonction pour basculer l'état d'une cellule
-function toggleCell(x, y) {
-  grid[y][x] = cellState === 0 ? 1 : 0;
-  drawGrid();
-}
-
 // Obtenir la position de la souris dans la grille
 function getMousePos(evt) {
   const rect = canvasElement.getBoundingClientRect();
@@ -121,12 +116,12 @@ function getMousePos(evt) {
 function reset() {
   grid.forEach((row) => row.fill(0)); // Réinitialiser toutes les cellules à 0
   counterElement.textContent = 0;
-  initInputElement.value = 1;
-  nInputElement.value = '';
-  pInputElement.value = '';
-  qInputElement.value = '';
+  initInput.value = 1;
+  nInput.value = '';
+  pInput.value = '';
+  qInput.value = '';
 
-  drawGrid();
+  updateGrid();
 }
 
 function centerCanvas() {
@@ -144,7 +139,7 @@ function generatePyramide() {
   // Réinitialiser la grille
   grid.forEach((row) => row.fill(0));
 
-  const n = Math.min(parseInt(nInputElement.value) || 100, 5000);
+  const n = Math.min(parseInt(nInput.value) || 100, 5000);
 
   let currentRow = 2; // La 3ème ligne (index 2)
   let currentCol = Math.floor(columns / 2); // Milieu de la rangée
@@ -163,44 +158,57 @@ function generatePyramide() {
     elementsInRow += 2;
   }
 
-  drawGrid();
+  updateGrid();
   centerCanvas();
 }
 
 /* Gestion des événements*/
+let cellState = 0;
+
+function toggleCell(x, y) {
+  grid[y][x] = cellState === 0 ? 1 : 0;
+  updateGrid();
+}
+
+let isDrawing = false;
+
 canvasElement.addEventListener('mousedown', function (e) {
-  isMouseDown = true;
+  isDrawing = true;
+
   const { x, y } = getMousePos(e);
   cellState = grid[y][x];
   toggleCell(x, y);
 });
 
 canvasElement.addEventListener('mousemove', function (e) {
-  if (isMouseDown) {
+  if (isDrawing) {
     const { x, y } = getMousePos(e);
     toggleCell(x, y);
   }
 });
 
-canvasElement.addEventListener('mouseup', function () {
-  isMouseDown = false;
+canvasElement.addEventListener('mouseup', () => {
+  isDrawing = false;
 });
 
-pInputElement.addEventListener('input', drawGrid);
-qInputElement.addEventListener('input', drawGrid);
-nInputElement.addEventListener('input', drawGrid);
-initInputElement.addEventListener('input', drawGrid);
+canvas.addEventListener('mouseleave', () => {
+  isDrawing = false;
+});
+
+[nInput, pInput, qInput, initInput].forEach(input => {
+  input.addEventListener('input', updateGrid);
+});
 
 window.addEventListener('load', centerCanvas);
 
 decrementButton.onclick = () => {
-  initInputElement.value = parseInt(initInputElement.value) - 1;
-  drawGrid();
+  initInput.value = parseInt(initInput.value) - 1;
+  updateGrid();
 };
 
 incrementButton.onclick = () => {
-  initInputElement.value = parseInt(initInputElement.value) + 1;
-  drawGrid();
+  initInput.value = parseInt(initInput.value) + 1;
+  updateGrid();
 };
 
 pyramideButton.onclick = generatePyramide;
