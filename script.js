@@ -16,7 +16,7 @@ const pyramideButton = document.getElementById('pyramide');
 
 // Dimensions de la grille et des cellules
 const columns = 150;
-const rows = 100;
+const rows = 80;
 const cellSize = 20;
 
 // Ajuster la taille du canvas
