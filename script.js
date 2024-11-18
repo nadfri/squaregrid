@@ -12,6 +12,7 @@ const pqDisplayElement = document.getElementById('pq');
 const decrementButton = document.getElementById('decrement');
 const incrementButton = document.getElementById('increment');
 const resetButton = document.getElementById('reset');
+const pyramideButton = document.getElementById('pyramide');
 
 // Dimensions de la grille et des cellules
 const columns = 100;
@@ -221,9 +222,9 @@ updateDisplay();
 
 function centerCanvas() {
   const offsetX = (canvasElement.width - window.innerWidth) / 2;
-  const offsetY = (canvasElement.height - window.innerHeight) / 2;
+  // const offsetY = (canvasElement.height - window.innerHeight) / 2;
   window.scrollTo({
-    top: offsetY,
+    top: 0,
     left: offsetX,
     behavior: 'smooth',
   });
@@ -236,3 +237,33 @@ window.addEventListener('load', centerCanvas);
 document.addEventListener('DOMContentLoaded', () => {
   setTimeout(centerCanvas, 100); // Petit délai pour s'assurer que tout est chargé
 });
+
+function generatePyramide() {
+  // Réinitialiser la grille
+  grid = grid.map((row) => row.map(() => 0));
+
+  const n = parseInt(nInputElement.value) || 100;
+
+  let currentRow = 2; // La 3ème ligne (index 2)
+  let currentCol = Math.floor(columns / 2); // Milieu de la rangée
+  let elementsInRow = 1;
+  let totalElements = 0;
+
+  while (totalElements < n) {
+    let startCol = currentCol - Math.floor(elementsInRow / 2);
+    for (let i = 0; i < elementsInRow; i++) {
+      if (startCol + i >= 0 && startCol + i < columns) {
+        grid[currentRow][startCol + i] = 1;
+      }
+    }
+    totalElements += elementsInRow;
+    currentRow++;
+    elementsInRow += 2;
+  }
+
+  updateDisplay();
+  centerCanvas();
+}
+
+pyramideButton.onclick = generatePyramide;
+

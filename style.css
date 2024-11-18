@@ -1,6 +1,7 @@
 * {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
 }
 
 body {
@@ -36,6 +37,7 @@ input[type='number'] {
 button {
   border: none;
   border-radius: 4px;
+  cursor: pointer;
 }
 
 #canvas {
@@ -115,6 +117,11 @@ a {
   color: purple;
   border-radius: 4px;
   font-weight: bold;
+}
+
+#pyramide {
+  padding: 4px 16px;
+  background-color: khaki;
 }
 
 @keyframes fadeIn {
