@@ -1,45 +1,45 @@
 'use strict';
 
 // Récupération des éléments du DOM
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
-const compteur = document.getElementById('compteur');
-const initInput = document.getElementById('init');
-const nInput = document.getElementById('n');
-const nbPInput = document.getElementById('nb_p');
-const nbQInput = document.getElementById('nb_q');
-const pqElement = document.getElementById('pq');
-const moins = document.getElementById('moins');
-const plus = document.getElementById('plus');
-const resetBtn = document.getElementById('reset');
+const canvasElement = document.getElementById('canvas');
+const context = canvasElement.getContext('2d');
+const counterElement = document.getElementById('counter');
+const initInputElement = document.getElementById('init');
+const nInputElement = document.getElementById('n');
+const pInputElement = document.getElementById('p');
+const qInputElement = document.getElementById('q');
+const pqDisplayElement = document.getElementById('pq');
+const decrementButton = document.getElementById('decrement');
+const incrementButton = document.getElementById('increment');
+const resetButton = document.getElementById('reset');
 
 // Dimensions de la grille et des cellules
-const cols = 100;
+const columns = 100;
 const rows = 100;
 const cellSize = 20;
 
 // Ajuster la taille du canvas
-canvas.width = cols * cellSize;
-canvas.height = rows * cellSize;
+canvasElement.width = columns * cellSize;
+canvasElement.height = rows * cellSize;
 
 // Création de la grille (tableau 2D)
 let grid = [];
 for (let y = 0; y < rows; y++) {
   grid[y] = [];
-  for (let x = 0; x < cols; x++) {
+  for (let x = 0; x < columns; x++) {
     grid[y][x] = 0; // 0: vide, 1: rempli
   }
 }
 
 // Variables pour l'interaction
 let isMouseDown = false;
-let state = 0;
+let cellState = 0;
 
 // Variables pour les calculs
-let startCount = parseInt(initInput.value) || 1;
-let nValue = parseInt(nInput.value) || null;
-let nbPValue = parseInt(nbPInput.value) || null;
-let nbQValue = parseInt(nbQInput.value) || null;
+let startCount = parseInt(initInputElement.value) || 1;
+let nValue = parseInt(nInputElement.value) || null;
+let pValue = parseInt(pInputElement.value) || null;
+let qValue = parseInt(qInputElement.value) || null;
 let pqValue = null;
 
 // Chargement des nombres premiers
@@ -47,30 +47,30 @@ const primesSet = new Set(primes); // primes doit être défini dans primes.js
 
 // Fonction pour dessiner la grille
 function drawGrid() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  context.clearRect(0, 0, canvasElement.width, canvasElement.height);
 
-  ctx.font = `${cellSize / 2}px Arial`;
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
+  context.font = `${cellSize / 2}px Arial`;
+  context.textAlign = 'center';
+  context.textBaseline = 'middle';
 
   // Dessiner le quadrillage
-  ctx.strokeStyle = '#ddd';
+  context.strokeStyle = '#ddd';
   for (let y = 0; y <= rows; y++) {
-    ctx.beginPath();
-    ctx.moveTo(0, y * cellSize);
-    ctx.lineTo(cols * cellSize, y * cellSize);
-    ctx.stroke();
+    context.beginPath();
+    context.moveTo(0, y * cellSize);
+    context.lineTo(columns * cellSize, y * cellSize);
+    context.stroke();
   }
-  for (let x = 0; x <= cols; x++) {
-    ctx.beginPath();
-    ctx.moveTo(x * cellSize, 0);
-    ctx.lineTo(x * cellSize, rows * cellSize);
-    ctx.stroke();
+  for (let x = 0; x <= columns; x++) {
+    context.beginPath();
+    context.moveTo(x * cellSize, 0);
+    context.lineTo(x * cellSize, rows * cellSize);
+    context.stroke();
   }
 
   // Parcourir la grille pour dessiner les cellules remplies
   for (let y = 0; y < rows; y++) {
-    for (let x = 0; x < cols; x++) {
+    for (let x = 0; x < columns; x++) {
       if (grid[y][x] === 1) {
         const count = getCount(x, y);
         const posX = x * cellSize;
@@ -82,7 +82,7 @@ function drawGrid() {
           fillColor = 'gold';
         } else if (count === pqValue) {
           fillColor = 'purple';
-        } else if (count === nbPValue || count === nbQValue) {
+        } else if (count === pValue || count === qValue) {
           fillColor = 'purple';
         } else if (primesSet.has(Math.abs(count))) {
           fillColor = 'blue';
@@ -91,12 +91,12 @@ function drawGrid() {
         }
 
         // Dessiner la cellule
-        ctx.fillStyle = fillColor;
-        ctx.fillRect(posX, posY, cellSize, cellSize);
+        context.fillStyle = fillColor;
+        context.fillRect(posX, posY, cellSize, cellSize);
 
         // Afficher le numéro
-        ctx.fillStyle = fillColor === 'gold' ? 'black' : 'white';
-        ctx.fillText(count, posX + cellSize / 2, posY + cellSize / 2);
+        context.fillStyle = fillColor === 'gold' ? 'black' : 'white';
+        context.fillText(count, posX + cellSize / 2, posY + cellSize / 2);
       }
     }
   }
@@ -106,7 +106,7 @@ function drawGrid() {
 function getCount(x, y) {
   let count = startCount;
   for (let cy = 0; cy < rows; cy++) {
-    for (let cx = 0; cx < cols; cx++) {
+    for (let cx = 0; cx < columns; cx++) {
       if (grid[cy][cx] === 1) {
         if (cy < y || (cy === y && cx <= x)) {
           if (cy !== y || cx !== x) {
@@ -122,33 +122,33 @@ function getCount(x, y) {
 }
 
 // Gestion des événements de souris
-canvas.addEventListener('mousedown', function (e) {
+canvasElement.addEventListener('mousedown', function (e) {
   isMouseDown = true;
   const { x, y } = getMousePos(e);
-  state = grid[y][x];
+  cellState = grid[y][x];
   toggleCell(x, y);
 });
 
-canvas.addEventListener('mousemove', function (e) {
+canvasElement.addEventListener('mousemove', function (e) {
   if (isMouseDown) {
     const { x, y } = getMousePos(e);
     toggleCell(x, y);
   }
 });
 
-canvas.addEventListener('mouseup', function () {
+canvasElement.addEventListener('mouseup', function () {
   isMouseDown = false;
 });
 
 // Fonction pour basculer l'état d'une cellule
 function toggleCell(x, y) {
-  grid[y][x] = state === 0 ? 1 : 0;
+  grid[y][x] = cellState === 0 ? 1 : 0;
   updateDisplay();
 }
 
 // Obtenir la position de la souris dans la grille
 function getMousePos(evt) {
-  const rect = canvas.getBoundingClientRect();
+  const rect = canvasElement.getBoundingClientRect();
   const x = Math.floor((evt.clientX - rect.left) / cellSize);
   const y = Math.floor((evt.clientY - rect.top) / cellSize);
   return { x, y };
@@ -158,60 +158,60 @@ function getMousePos(evt) {
 function updateDisplay() {
   // Mise à jour du compteur
   const count = grid.flat().filter((value) => value === 1).length;
-  compteur.textContent = count;
+  counterElement.textContent = count;
   drawGrid();
 }
 
 // Gestion des boutons et des entrées
-initInput.addEventListener('input', () => {
-  startCount = parseInt(initInput.value) || 1;
+initInputElement.addEventListener('input', () => {
+  startCount = parseInt(initInputElement.value) || 1;
   updateDisplay();
 });
 
-nInput.addEventListener('input', () => {
-  nValue = parseInt(nInput.value) || null;
+nInputElement.addEventListener('input', () => {
+  nValue = parseInt(nInputElement.value) || null;
   updateDisplay();
 });
 
-moins.onclick = () => {
-  initInput.value = parseInt(initInput.value) - 1;
-  startCount = parseInt(initInput.value) || 1;
+decrementButton.onclick = () => {
+  initInputElement.value = parseInt(initInputElement.value) - 1;
+  startCount = parseInt(initInputElement.value) || 1;
   updateDisplay();
 };
 
-plus.onclick = () => {
-  initInput.value = parseInt(initInput.value) + 1;
-  startCount = parseInt(initInput.value) || 1;
+incrementButton.onclick = () => {
+  initInputElement.value = parseInt(initInputElement.value) + 1;
+  startCount = parseInt(initInputElement.value) || 1;
   updateDisplay();
 };
 
-resetBtn.onclick = () => {
+resetButton.onclick = () => {
   grid = grid.map((row) => row.map(() => 0));
-  compteur.textContent = 0;
-  initInput.value = 1;
+  counterElement.textContent = 0;
+  initInputElement.value = 1;
   startCount = 1;
   updateDisplay();
 };
 
-nbPInput.addEventListener('input', () => {
-  nbPValue = parseInt(nbPInput.value) || null;
+pInputElement.addEventListener('input', () => {
+  pValue = parseInt(pInputElement.value) || null;
   updatePQ();
   updateDisplay();
 });
 
-nbQInput.addEventListener('input', () => {
-  nbQValue = parseInt(nbQInput.value) || null;
+qInputElement.addEventListener('input', () => {
+  qValue = parseInt(qInputElement.value) || null;
   updatePQ();
   updateDisplay();
 });
 
 function updatePQ() {
-  if (nbPValue && nbQValue) {
-    pqValue = nbPValue * nbQValue;
-    pqElement.textContent = pqValue;
+  if (pValue && qValue) {
+    pqValue = pValue * qValue;
+    pqDisplayElement.textContent = pqValue;
   } else {
     pqValue = null;
-    pqElement.textContent = '';
+    pqDisplayElement.textContent = '';
   }
 }
 
@@ -220,8 +220,8 @@ updatePQ();
 updateDisplay();
 
 function centerCanvas() {
-  const offsetX = (canvas.width - window.innerWidth) / 2;
-  const offsetY = (canvas.height - window.innerHeight) / 2;
+  const offsetX = (canvasElement.width - window.innerWidth) / 2;
+  const offsetY = (canvasElement.height - window.innerHeight) / 2;
   window.scrollTo({
     top: offsetY,
     left: offsetX,

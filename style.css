@@ -38,13 +38,11 @@ button {
   border-radius: 4px;
 }
 
-
-
 #canvas {
   border: 1px solid #ddd;
 }
 
-.compteur {
+.counter {
   display: flex;
   align-items: center;
   color: red;
@@ -68,15 +66,15 @@ button {
   padding: 4px 16px;
 }
 
-#moins,
-#plus {
+#decrement,
+#increment {
   width: 30px;
   height: 30px;
   font-size: 1.5rem;
   margin: 2px;
 }
 
-.container-input {
+.input-container {
   display: flex;
   align-items: center;
   border-radius: 5px;
@@ -84,7 +82,7 @@ button {
   padding: 5px 10px;
 }
 
-.container-pq {
+.pq-container {
   display: flex;
   align-items: center;
   border-radius: 5px;
@@ -92,7 +90,7 @@ button {
   padding: 5px 10px;
 }
 
-.container-pq input {
+.pq-container input {
   color: purple;
 }
 
