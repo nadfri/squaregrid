@@ -1,6 +1,6 @@
 'use strict';
 
-/*Récupération des éléments du DOM*/
+/* DOM elements */
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 const counter = document.getElementById('counter');
@@ -14,7 +14,7 @@ const incrementBtn = document.getElementById('increment');
 const resetBtn = document.getElementById('reset');
 const pyramideBtn = document.getElementById('pyramide');
 
-/* Dimensions de la grille et des cellules */
+/* Grid and cell dimensions */
 const COLS = 150;
 const ROWS = 80;
 const CELL_SIZE = 20;
@@ -23,11 +23,11 @@ canvas.height = ROWS * CELL_SIZE;
 const grid = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
 const primesSet = new Set(primes);
 
-/* Fonction pour dessiner la grille */
+/* Draw the grid */
 function drawGrid() {
   ctx.strokeStyle = '#ddd';
 
-  // Lignes horizontales
+  // Horizontal lines
   for (let y = 0; y <= ROWS; y++) {
     ctx.beginPath();
     ctx.moveTo(0, y * CELL_SIZE);
@@ -35,7 +35,7 @@ function drawGrid() {
     ctx.stroke();
   }
 
-  // Lignes verticales
+  // Vertical lines
   for (let x = 0; x <= COLS; x++) {
     ctx.beginPath();
     ctx.moveTo(x * CELL_SIZE, 0);
@@ -44,7 +44,7 @@ function drawGrid() {
   }
 }
 
-/* Fonction pour mettre à jour et dessiner la grille */
+/* Update the grid */
 function updateGrid() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   drawGrid();
@@ -67,11 +67,11 @@ function updateGrid() {
         const posY = y * CELL_SIZE;
         const color = getCellColor(count, n, p, q, pq);
 
-        // Dessiner la cellule
+        // Draw the cell
         ctx.fillStyle = color;
         ctx.fillRect(posX, posY, CELL_SIZE, CELL_SIZE);
 
-        // Texte dans la cellule
+        // Text in the cell
         const fontSize = Math.min(
           CELL_SIZE / 2,
           CELL_SIZE / (count.toString().length * 0.6)
@@ -88,7 +88,7 @@ function updateGrid() {
   });
 }
 
-/* Fonction pour déterminer la couleur d'une cellule */
+/* Determine the color of a cell */
 function getCellColor(count, n, p, q, pq) {
   if (count === n) return 'gold';
   if ([p, q, pq].includes(count)) return 'purple';
@@ -97,7 +97,7 @@ function getCellColor(count, n, p, q, pq) {
   return '#9e9e9e';
 }
 
-/* Fonction pour réinitialiser la grille */
+/* Reset the grid */
 function resetGrid() {
   grid.forEach((row) => row.fill(0));
   counter.textContent = 0;
@@ -109,19 +109,19 @@ function resetGrid() {
   updateGrid();
 }
 
-/* Fonction pour centrer le canvas */
+/* Center the canvas */
 function centerCanvas() {
   const offsetX = (canvas.width - window.innerWidth) / 2;
   window.scrollTo({ top: 0, left: offsetX, behavior: 'smooth' });
 }
 
-/* Fonction pour générer une pyramide de nombres */
+/* Generate a pyramid of numbers */
 function generatePyramide() {
   grid.forEach((row) => row.fill(0)); // Reset
 
   const n = Math.min(parseInt(nInput.value) || 100, 5000);
-  let currentRow = 2; // Index 2 (3ème ligne)
-  let currentCol = Math.floor(COLS / 2); // Colonne du milieu
+  let currentRow = 2; // Index 2 (3rd row)
+  let currentCol = Math.floor(COLS / 2); // Middle column
   let elementsInRow = 1;
   let totalElements = 0;
 
@@ -141,7 +141,7 @@ function generatePyramide() {
   centerCanvas();
 }
 
-/* Fonction pour obtenir la position de la souris dans la grille */
+/* Get the mouse position in the grid */
 function getMousePos(evt) {
   const rect = canvas.getBoundingClientRect();
   const x = Math.floor((evt.clientX - rect.left) / CELL_SIZE);
@@ -149,7 +149,7 @@ function getMousePos(evt) {
   return { x, y };
 }
 
-/* Gestion des événements de souris */
+/* Mouse event handlers */
 let isDrawing = false;
 let cellState = 0;
 
@@ -196,5 +196,5 @@ incrementBtn.addEventListener('click', () => {
 
 window.addEventListener('load', centerCanvas);
 
-/* Initialisation */
+/* Initialization */
 drawGrid();
