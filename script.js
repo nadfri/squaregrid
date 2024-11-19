@@ -23,15 +23,6 @@ canvas.height = ROWS * CELL_SIZE;
 const grid = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
 const primesSet = new Set(primes);
 
-/* Fonction pour déterminer la couleur d'une cellule */
-function getCellColor(count, n, p, q, pq) {
-  if (count === n) return 'gold';
-  if ([p, q, pq].includes(count)) return 'purple';
-  if (primesSet.has(Math.abs(count))) return 'blue';
-  if (Number.isInteger(Math.sqrt(Math.abs(count)))) return 'green';
-  return '#9e9e9e';
-}
-
 /* Fonction pour dessiner la grille */
 function drawGrid() {
   ctx.strokeStyle = '#ddd';
@@ -97,6 +88,15 @@ function updateGrid() {
   });
 }
 
+/* Fonction pour déterminer la couleur d'une cellule */
+function getCellColor(count, n, p, q, pq) {
+  if (count === n) return 'gold';
+  if ([p, q, pq].includes(count)) return 'purple';
+  if (primesSet.has(Math.abs(count))) return 'blue';
+  if (Number.isInteger(Math.sqrt(Math.abs(count)))) return 'green';
+  return '#9e9e9e';
+}
+
 /* Fonction pour réinitialiser la grille */
 function resetGrid() {
   grid.forEach((row) => row.fill(0));
@@ -117,23 +117,22 @@ function centerCanvas() {
 
 /* Fonction pour générer une pyramide de nombres */
 function generatePyramide() {
-  resetGrid();
+  grid.forEach((row) => row.fill(0)); // Reset
+
   const n = Math.min(parseInt(nInput.value) || 100, 5000);
   let currentRow = 2; // Index 2 (3ème ligne)
-  let currentCol = Math.floor(COLS / 2);
+  let currentCol = Math.floor(COLS / 2); // Colonne du milieu
   let elementsInRow = 1;
   let totalElements = 0;
 
-  while (totalElements < n && currentRow < ROWS) {
-    const startCol = currentCol - Math.floor(elementsInRow / 2);
+  while (totalElements < n) {
+    let startCol = currentCol - Math.floor(elementsInRow / 2);
     for (let i = 0; i < elementsInRow; i++) {
-      const x = startCol + i;
-      if (x >= 0 && x < COLS) {
-        grid[currentRow][x] = 1;
-        totalElements++;
-        if (totalElements >= n) break;
+      if (startCol + i >= 0 && startCol + i < COLS) {
+        grid[currentRow][startCol + i] = 1;
       }
     }
+    totalElements += elementsInRow;
     currentRow++;
     elementsInRow += 2;
   }
@@ -176,7 +175,6 @@ function handleMouseEvent(e) {
 function stopDrawing() {
   isDrawing = false;
 }
-
 
 resetBtn.addEventListener('click', resetGrid);
 
