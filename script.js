@@ -1,159 +1,139 @@
 'use strict';
 
-// Récupération des éléments du DOM
-const canvasElement = document.getElementById('canvas');
-const context = canvasElement.getContext('2d');
-const counterElement = document.getElementById('counter');
+/*Récupération des éléments du DOM*/
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const counter = document.getElementById('counter');
 const initInput = document.getElementById('init');
 const nInput = document.getElementById('n');
 const pInput = document.getElementById('p');
 const qInput = document.getElementById('q');
-const pqElement = document.getElementById('pq');
-const decrementButton = document.getElementById('decrement');
-const incrementButton = document.getElementById('increment');
-const resetButton = document.getElementById('reset');
-const pyramideButton = document.getElementById('pyramide');
+const pqDisplay = document.getElementById('pq');
+const decrementBtn = document.getElementById('decrement');
+const incrementBtn = document.getElementById('increment');
+const resetBtn = document.getElementById('reset');
+const pyramideBtn = document.getElementById('pyramide');
 
-/* Dimensions de la grille et des cellules*/
-const columns = 150;
-const rows = 80;
-const cellSize = 20;
-canvasElement.width = columns * cellSize;
-canvasElement.height = rows * cellSize;
-
-// Création de la grille (tableau 2D)
-const grid = Array.from({ length: rows }, () => Array(columns).fill(0));
-
+/* Dimensions de la grille et des cellules */
+const COLS = 150;
+const ROWS = 80;
+const CELL_SIZE = 20;
+canvas.width = COLS * CELL_SIZE;
+canvas.height = ROWS * CELL_SIZE;
+const grid = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
 const primesSet = new Set(primes);
 
+/* Fonction pour déterminer la couleur d'une cellule */
+function getCellColor(count, n, p, q, pq) {
+  if (count === n) return 'gold';
+  if ([p, q, pq].includes(count)) return 'purple';
+  if (primesSet.has(Math.abs(count))) return 'blue';
+  if (Number.isInteger(Math.sqrt(Math.abs(count)))) return 'green';
+  return '#9e9e9e';
+}
+
+/* Fonction pour dessiner la grille */
 function drawGrid() {
-  context.strokeStyle = '#ddd';
-  for (let y = 0; y <= rows; y++) {
-    context.beginPath();
-    context.moveTo(0, y * cellSize);
-    context.lineTo(columns * cellSize, y * cellSize);
-    context.stroke();
+  ctx.strokeStyle = '#ddd';
+
+  // Lignes horizontales
+  for (let y = 0; y <= ROWS; y++) {
+    ctx.beginPath();
+    ctx.moveTo(0, y * CELL_SIZE);
+    ctx.lineTo(COLS * CELL_SIZE, y * CELL_SIZE);
+    ctx.stroke();
   }
-  for (let x = 0; x <= columns; x++) {
-    context.beginPath();
-    context.moveTo(x * cellSize, 0);
-    context.lineTo(x * cellSize, rows * cellSize);
-    context.stroke();
+
+  // Lignes verticales
+  for (let x = 0; x <= COLS; x++) {
+    ctx.beginPath();
+    ctx.moveTo(x * CELL_SIZE, 0);
+    ctx.lineTo(x * CELL_SIZE, ROWS * CELL_SIZE);
+    ctx.stroke();
   }
 }
 
-// Fonction pour dessiner la grille
+/* Fonction pour mettre à jour et dessiner la grille */
 function updateGrid() {
-  context.clearRect(0, 0, canvasElement.width, canvasElement.height);
-
-  // Initialisation des variables
-  const nValue = parseInt(nInput.value) || null;
-  const pValue = parseInt(pInput.value) || null;
-  const qValue = parseInt(qInput.value) || null;
-  const pqValue = pValue * qValue;
-
-  const countElements = grid.flat().filter((value) => value === 1).length;
-  counterElement.textContent = countElements;
-  pqElement.textContent = pqValue || '';
-
-  let count = parseInt(initInput.value) ?? 1;
-
-  // Dessiner le quadrillage
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
   drawGrid();
 
-  // Parcourir la grille pour dessiner les cellules remplies
-  for (let y = 0; y < rows; y++) {
-    for (let x = 0; x < columns; x++) {
-      if (grid[y][x] === 1) {
-        const posX = x * cellSize;
-        const posY = y * cellSize;
+  const n = parseInt(nInput.value) || null;
+  const p = parseInt(pInput.value) || null;
+  const q = parseInt(qInput.value) || null;
+  const pq = p * q || null;
+  const filledCount = grid.flat().filter((value) => value === 1).length;
 
-        // Déterminer la couleur de la cellule
-        let fillColor = '#9e9e9e'; // Couleur par défaut
-        if (count === nValue) {
-          fillColor = 'gold';
-        } else if (count === pValue || count === qValue || count === pqValue) {
-          fillColor = 'purple';
-        } else if (primesSet.has(Math.abs(count))) {
-          fillColor = 'blue';
-        } else if (Math.sqrt(Math.abs(count)) % 1 === 0) {
-          fillColor = 'green';
-        }
+  counter.textContent = filledCount;
+  pqDisplay.textContent = pq || '';
+
+  let count = parseInt(initInput.value) || 1;
+
+  grid.forEach((row, y) => {
+    row.forEach((cell, x) => {
+      if (cell === 1) {
+        const posX = x * CELL_SIZE;
+        const posY = y * CELL_SIZE;
+        const color = getCellColor(count, n, p, q, pq);
 
         // Dessiner la cellule
-        context.fillStyle = fillColor;
-        context.fillRect(posX, posY, cellSize, cellSize);
+        ctx.fillStyle = color;
+        ctx.fillRect(posX, posY, CELL_SIZE, CELL_SIZE);
 
-        // Adapter la taille de la police pour qu'elle tienne dans la case
+        // Texte dans la cellule
         const fontSize = Math.min(
-          cellSize / 2,
-          cellSize / (count.toString().length * 0.6)
+          CELL_SIZE / 2,
+          CELL_SIZE / (count.toString().length * 0.6)
         );
-        context.font = `${fontSize}px Roboto`;
-        context.textAlign = 'center';
-        context.textBaseline = 'middle';
+        ctx.font = `${fontSize}px Roboto`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = color === 'gold' ? 'black' : 'white';
+        ctx.fillText(count, posX + CELL_SIZE / 2, posY + CELL_SIZE / 2);
 
-        // Afficher le numéro
-        context.fillStyle = fillColor === 'gold' ? 'black' : 'white';
-        context.fillText(count, posX + cellSize / 2, posY + cellSize / 2);
-
-        // Incrémenter le compteur après chaque cellule remplie
         count++;
       }
-    }
-  }
+    });
+  });
 }
 
-// Obtenir la position de la souris dans la grille
-function getMousePos(evt) {
-  const rect = canvasElement.getBoundingClientRect();
-  const x = Math.floor((evt.clientX - rect.left) / cellSize);
-  const y = Math.floor((evt.clientY - rect.top) / cellSize);
-  return { x, y };
-}
-
-/*Réinitialiser la grille*/
-function reset() {
-  grid.forEach((row) => row.fill(0)); // Réinitialiser toutes les cellules à 0
-  counterElement.textContent = 0;
+/* Fonction pour réinitialiser la grille */
+function resetGrid() {
+  grid.forEach((row) => row.fill(0));
+  counter.textContent = 0;
   initInput.value = 1;
   nInput.value = '';
   pInput.value = '';
   qInput.value = '';
-
+  pqDisplay.textContent = '';
   updateGrid();
 }
 
+/* Fonction pour centrer le canvas */
 function centerCanvas() {
-  const offsetX = (canvasElement.width - window.innerWidth) / 2;
-  // const offsetY = (canvasElement.height - window.innerHeight) / 2;
-  window.scrollTo({
-    top: 0,
-    left: offsetX,
-    behavior: 'smooth',
-  });
+  const offsetX = (canvas.width - window.innerWidth) / 2;
+  window.scrollTo({ top: 0, left: offsetX, behavior: 'smooth' });
 }
 
-/*Generer une pyramide de nombres*/
+/* Fonction pour générer une pyramide de nombres */
 function generatePyramide() {
-  // Réinitialiser la grille
-  grid.forEach((row) => row.fill(0));
-
+  resetGrid();
   const n = Math.min(parseInt(nInput.value) || 100, 5000);
-
-  let currentRow = 2; // La 3ème ligne (index 2)
-  let currentCol = Math.floor(columns / 2); // Milieu de la rangée
+  let currentRow = 2; // Index 2 (3ème ligne)
+  let currentCol = Math.floor(COLS / 2);
   let elementsInRow = 1;
   let totalElements = 0;
 
-  while (totalElements < n) {
-    let startCol = currentCol - Math.floor(elementsInRow / 2);
+  while (totalElements < n && currentRow < ROWS) {
+    const startCol = currentCol - Math.floor(elementsInRow / 2);
     for (let i = 0; i < elementsInRow; i++) {
-      if (startCol + i >= 0 && startCol + i < columns) {
-        grid[currentRow][startCol + i] = 1;
+      const x = startCol + i;
+      if (x >= 0 && x < COLS) {
+        grid[currentRow][x] = 1;
+        totalElements++;
+        if (totalElements >= n) break;
       }
     }
-    totalElements += elementsInRow;
     currentRow++;
     elementsInRow += 2;
   }
@@ -162,57 +142,61 @@ function generatePyramide() {
   centerCanvas();
 }
 
-/* Gestion des événements*/
-let cellState = 0;
-
-function toggleCell(x, y) {
-  grid[y][x] = cellState === 0 ? 1 : 0;
-  updateGrid();
+/* Fonction pour obtenir la position de la souris dans la grille */
+function getMousePos(evt) {
+  const rect = canvas.getBoundingClientRect();
+  const x = Math.floor((evt.clientX - rect.left) / CELL_SIZE);
+  const y = Math.floor((evt.clientY - rect.top) / CELL_SIZE);
+  return { x, y };
 }
 
+/* Gestion des événements de souris */
 let isDrawing = false;
+let cellState = 0;
 
-canvasElement.addEventListener('mousedown', function (e) {
-  isDrawing = true;
+canvas.addEventListener('mousedown', handleMouseEvent);
+canvas.addEventListener('mousemove', handleMouseEvent);
+canvas.addEventListener('mouseup', stopDrawing);
+canvas.addEventListener('mouseleave', stopDrawing);
 
+function handleMouseEvent(e) {
   const { x, y } = getMousePos(e);
-  cellState = grid[y][x];
-  toggleCell(x, y);
-});
 
-canvasElement.addEventListener('mousemove', function (e) {
-  if (isDrawing) {
-    const { x, y } = getMousePos(e);
-    toggleCell(x, y);
+  if (e.type === 'mousedown') {
+    isDrawing = true;
+    cellState = grid[y][x];
   }
-});
 
-canvasElement.addEventListener('mouseup', () => {
+  if (isDrawing) {
+    grid[y][x] = cellState === 0 ? 1 : 0;
+    updateGrid();
+  }
+}
+
+function stopDrawing() {
   isDrawing = false;
+}
+
+
+resetBtn.addEventListener('click', resetGrid);
+
+pyramideBtn.addEventListener('click', generatePyramide);
+
+decrementBtn.addEventListener('click', () => {
+  initInput.value = parseInt(initInput.value) - 1;
+  updateGrid();
 });
 
-canvas.addEventListener('mouseleave', () => {
-  isDrawing = false;
+incrementBtn.addEventListener('click', () => {
+  initInput.value = parseInt(initInput.value) + 1;
+  updateGrid();
 });
 
-[nInput, pInput, qInput, initInput].forEach(input => {
+[nInput, pInput, qInput, initInput].forEach((input) => {
   input.addEventListener('input', updateGrid);
 });
 
 window.addEventListener('load', centerCanvas);
 
-decrementButton.onclick = () => {
-  initInput.value = parseInt(initInput.value) - 1;
-  updateGrid();
-};
-
-incrementButton.onclick = () => {
-  initInput.value = parseInt(initInput.value) + 1;
-  updateGrid();
-};
-
-pyramideButton.onclick = generatePyramide;
-resetButton.onclick = reset;
-
-// Initialisation
+/* Initialisation */
 drawGrid();
