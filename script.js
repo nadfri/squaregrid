@@ -4,6 +4,7 @@
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 const counter = document.getElementById('counter');
+const rowCounter = document.getElementById('rowCounter'); // Nouvel élément
 const initInput = document.getElementById('init');
 const nInput = document.getElementById('n');
 const pInput = document.getElementById('p');
@@ -44,6 +45,13 @@ function drawGrid() {
   }
 }
 
+/* Number of occupied rows */
+function countOccupiedRows() {
+  return grid.reduce((count, row) => {
+    return count + (row.some((cell) => cell === 1) ? 1 : 0);
+  }, 0);
+}
+
 /* Update the grid */
 function updateGrid() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -53,9 +61,9 @@ function updateGrid() {
   const p = parseInt(pInput.value) || null;
   const q = parseInt(qInput.value) || null;
   const pq = p * q || null;
-  const filledCount = grid.flat().filter((value) => value === 1).length;
 
-  counter.textContent = filledCount;
+  rowCounter.textContent = countOccupiedRows();
+
   pqDisplay.textContent = pq || '';
 
   let count = parseInt(initInput.value) || 1;
@@ -100,7 +108,6 @@ function getCellColor(count, n, p, q, pq) {
 /* Reset the grid */
 function resetGrid() {
   grid.forEach((row) => row.fill(0));
-  counter.textContent = 0;
   initInput.value = 1;
   nInput.value = '';
   pInput.value = '';
