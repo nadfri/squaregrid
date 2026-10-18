@@ -1,75 +1,124 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Find p & q by Square</title>
-    <link rel="stylesheet" href="square.css" />
-    <script src="square.js" defer></script>
+    <title>SquareGrid · Factorisation de N</title>
+    <script type="module" src="/src/square.ts"></script>
   </head>
   <body>
-    <form id="form">
-      <div class="container_pq">
-        <div class="container">p: <input type="number" id="inputP" value="1999" /></div>
+    <main class="page">
+      <header class="topbar">
+        <a class="btn" href="index.html">← Grille</a>
+        <h1>Factorisation de <span class="accent">N</span></h1>
+      </header>
 
-        <span>x</span>
+      <form id="form" class="card glass" autocomplete="off">
+        <section class="inputs">
+          <div class="pq-row">
+            <div class="field">
+              <label for="inputP">p</label>
+              <input type="text" inputmode="numeric" id="inputP" value="1999" />
+            </div>
+            <span class="op">×</span>
+            <div class="field">
+              <label for="inputQ">q</label>
+              <input type="text" inputmode="numeric" id="inputQ" value="10037" />
+            </div>
+            <span class="op">=</span>
+            <div class="field grow">
+              <span class="label">N</span>
+              <output id="spanN" class="num result-n"></output>
+            </div>
+          </div>
 
-        <div class="container">q: <input type="number" id="inputQ" value="10037" /></div>
-      </div>
+          <div class="divider"><span>ou</span></div>
 
-      <div class="container_N">
-        <div>N: <span id="spanN"></span></div>
+          <div class="n-row">
+            <div class="field grow">
+              <label for="inputN">N</label>
+              <input type="text" inputmode="numeric" id="inputN" placeholder="Saisir N" />
+            </div>
+            <span class="op">×</span>
+            <div class="field">
+              <label for="inputCoef">k</label>
+              <input type="number" class="coef" id="inputCoef" value="1" placeholder="1" />
+            </div>
+            <span class="op">^</span>
+            <div class="field">
+              <label for="inputPowCoef">puissance</label>
+              <input
+                type="number"
+                class="coef"
+                id="inputPowCoef"
+                min="1"
+                value="2"
+                placeholder="2"
+              />
+            </div>
+          </div>
+        </section>
 
-        <p>OR</p>
+        <section class="stats">
+          <div class="stat">
+            <span class="label">Chiffres</span>
+            <span id="spanDigits" class="num"></span>
+          </div>
+          <div class="stat">
+            <span class="label">Nombre de calculs</span>
+            <span id="spanCalcul" class="num">—</span>
+          </div>
+          <div class="stat wide">
+            <span class="label">Méthode</span>
+            <span id="spanMethod">—</span>
+          </div>
+        </section>
 
-        <div class="container">
-          N: <input type="number" id="inputN" placeholder="Choose N" /> x
-          <input
-            type="number"
-            class="coef"
-            id="inputCoef"
-            value="1"
-            placeholder="1"
-          />^<input
-            type="number"
-            class="coef"
-            id="inputPowCoef"
-            min="2"
-            value="2"
-            placeholder="2"
-          />
+        <section class="equation" aria-label="N + X² = Y²">
+          <div class="label">N + X² = Y²</div>
+          <div class="eq num">
+            <span id="spanN2">N</span>
+            <span class="op">+</span>
+            <span><span id="spanX2">X</span>²</span>
+            <span class="op">=</span>
+            <span><span id="spanY2">Y</span>²</span>
+          </div>
+          <div class="xy">
+            <div><span class="label">Y</span> <span id="spanY" class="num">—</span></div>
+            <div><span class="label">X</span> <span id="spanX" class="num">—</span></div>
+          </div>
+        </section>
+
+        <section class="results">
+          <div class="result">
+            <span class="label" id="labelP">p = Y − X</span>
+            <span id="spanP" class="num">?</span>
+          </div>
+          <div class="result">
+            <span class="label" id="labelQ">q = Y + X</span>
+            <span id="spanQ" class="num">?</span>
+          </div>
+          <div class="result wide" id="factorsN" hidden>
+            <span class="label">Facteurs de m·N : Y − X ; Y + X</span>
+            <span id="spanFactors" class="num"></span>
+          </div>
+        </section>
+
+        <p id="error" class="error" role="alert"></p>
+
+        <div class="actions">
+          <button id="btnFind" class="btn btn-primary btn-lg">Calculer</button>
+          <button
+            id="btnLehman"
+            type="button"
+            class="btn btn-lg"
+            title="Lehman seul : essaie les multiplicateurs 4k dans l'ordre jusqu'au premier qui donne p et q"
+          >
+            Chercher m automatiquement
+          </button>
         </div>
-      </div>
-
-      <div>SAFE INTEGER: <span id="spanSafe"></span></div>
-
-      <div>Nombre de calculs: <span id="spanCalcul">__</span></div>
-
-      <div class="container_carre">
-        <div>Carré Y= <span id="spanY">( _ )</span>²</div>
-        <div>Carré X= <span id="spanX">( _ )</span>²</div>
-      </div>
-
-      <div class="container_xy">
-        <div>N + X² = Y²</div>
-        <div>
-          <span id="spanN2">N</span>
-          +
-          <span id="spanX2">X</span>² = <span id="spanY2">Y</span>²
-        </div>
-      </div>
-
-      <div class="container_result">
-        <div>p = ( Y - X ) = <span id="spanP">?</span></div>
-        <div>q = ( Y + X ) = <span id="spanQ">?</span></div>
-      </div>
-
-      <div><span id="error">Plus de 100 000 000 de calculs...</span></div>
-
-      <button id="btnFind">Calculate</button>
-    </form>
-
-    <a href="index.html">TO GRID</a>
+      </form>
+    </main>
   </body>
 </html>
