@@ -38,11 +38,18 @@ const tooltipMod = $("tooltipMod");
 const DEFAULT_COLS = 150;
 const DEFAULT_ROWS = 80;
 const DEFAULT_SCALE = 20;
+const FIT_MAX_SCALE = 2 * DEFAULT_SCALE;
 const MAX_PYRAMIDE = 1_000_000;
 const MAX_FERMAT_ROWS = 1000;
 const MIN_SCALE = 0.2;
 const MAX_SCALE = 200;
-const GAP_MIN_SCALE = 6; // below this, cells are drawn without separating gaps
+const GRID_MIN_SCALE = 4; // below this, grid lines would be denser than the cells
+const GRID_COLOR = "rgba(148, 163, 184, 0.16)";
+const DEFAULT_PYRAMIDE = 100;
+const DEFAULT_CARRE_SIDE = 10;
+const EDGE_MARGIN = 3; // drawing this close to a side grows the board there
+const GROW_STEP = 40;
+const MAX_DIM = 2000; // cap per side, the bitmap is rebuilt on every edit
 const MIN_FONT = 7; // smallest readable label, in px
 const CHAR_WIDTH = 0.62; // monospace glyph width / font size
 
@@ -145,6 +152,40 @@ function resizeGrid(newCols: number, newRows: number) {
   rowPrefix = new Int32Array(rows + 1);
   hovered = -1;
   focused = -1;
+}
+
+/**
+ * Adds empty rows/columns on the sides touched by cell i, keeping the view in place.
+ * Returns the new index of cell i. The number order is unchanged (row-major, empty cells skipped).
+ */
+function growAround(i: number): number {
+  const x = i % cols;
+  const y = Math.floor(i / cols);
+  const addLeft = x < EDGE_MARGIN ? Math.min(GROW_STEP, MAX_DIM - cols) : 0;
+  const addRight = x >= cols - EDGE_MARGIN ? Math.min(GROW_STEP, MAX_DIM - cols - addLeft) : 0;
+  const addTop = y < EDGE_MARGIN ? Math.min(GROW_STEP, MAX_DIM - rows) : 0;
+  const addBottom = y >= rows - EDGE_MARGIN ? Math.min(GROW_STEP, MAX_DIM - rows - addTop) : 0;
+  if (Math.max(addLeft, addRight, addTop, addBottom) <= 0) return i;
+
+  const oldCols = cols;
+  const newCols = cols + addLeft + addRight;
+  const newRows = rows + addTop + addBottom;
+  const next = new Uint8Array(newCols * newRows);
+  for (let r = 0; r < rows; r++)
+    next.set(cells.subarray(r * oldCols, (r + 1) * oldCols), (r + addTop) * newCols + addLeft);
+  const remap = (c: number) =>
+    c < 0 ? c : (Math.floor(c / oldCols) + addTop) * newCols + (c % oldCols) + addLeft;
+
+  cells = next;
+  cols = newCols;
+  rows = newRows;
+  rowPrefix = new Int32Array(rows + 1);
+  hovered = remap(hovered);
+  focused = remap(focused);
+  specials = specials.map((s) => ({ ...s, i: remap(s.i) }));
+  ox -= addLeft * scale;
+  oy -= addTop * scale;
+  return remap(i);
 }
 
 const filledCount = () => rowPrefix[rows];
@@ -312,7 +353,7 @@ function render() {
   ctx.drawImage(bitmap, ox, oy, gw, gh);
 
   const range = visibleRange();
-  if (scale >= GAP_MIN_SCALE) drawGaps(range);
+  if (scale >= GRID_MIN_SCALE) drawGrid(range);
   drawLabels(range);
   drawSpecialRings();
   drawFermat();
@@ -322,10 +363,10 @@ function render() {
   zoomLevel.textContent = `${Math.round((scale / DEFAULT_SCALE) * 100)}%`;
 }
 
-/** Thin background-colored lines between cells give a tiled look. */
-function drawGaps({ x0, x1, y0, y1 }: ReturnType<typeof visibleRange>) {
-  ctx.strokeStyle = BOARD;
-  ctx.lineWidth = Math.min(2, scale * 0.08);
+/** Cell borders over the whole board, so empty cells stay visible. */
+function drawGrid({ x0, x1, y0, y1 }: ReturnType<typeof visibleRange>) {
+  ctx.strokeStyle = GRID_COLOR;
+  ctx.lineWidth = 1;
   ctx.beginPath();
   const top = Math.max(oy, 0);
   const bottom = Math.min(oy + rows * scale, vh);
@@ -535,7 +576,7 @@ function fitToCells() {
   const v = viewport();
   const w = maxX - minX + 1;
   const h = maxY - minY + 1;
-  scale = clampScale(Math.min(v.width / w, v.height / h, 60));
+  scale = clampScale(Math.min(v.width / w, v.height / h, FIT_MAX_SCALE));
   ox = v.left + (v.width - w * scale) / 2 - minX * scale;
   oy = v.top + (v.height - h * scale) / 2 - minY * scale;
   scheduleRender();
@@ -576,36 +617,66 @@ function setMode(next: "draw" | "pan") {
 /* ---------- Actions ---------- */
 
 function resetGrid() {
-  clearFermat();
-  resizeGrid(DEFAULT_COLS, DEFAULT_ROWS);
   initInput.value = "1";
   nInput.value = "";
   pInput.value = "";
   qInput.value = "";
+  clearFermat();
+  resizeGrid(DEFAULT_COLS, DEFAULT_ROWS);
   refresh();
-  initialView();
+  centerOnCell(Math.floor(rows / 2) * cols + Math.floor(cols / 2), FIT_MAX_SCALE);
 }
 
 /** Pyramid: row r holds 2r + 1 numbers, so row r ends on a square (r + 1)². */
-function generatePyramide() {
+function generatePyramide(requested: bigint | null) {
   clearFermat();
-  const parsed = parseBigInt(nInput.value);
   const count =
-    !parsed || parsed < 1n ? 100 : parsed > BigInt(MAX_PYRAMIDE) ? MAX_PYRAMIDE : Number(parsed);
+    !requested || requested < 1n
+      ? DEFAULT_PYRAMIDE
+      : requested > BigInt(MAX_PYRAMIDE)
+        ? MAX_PYRAMIDE
+        : Number(requested);
   const pyramidRows = Math.ceil(Math.sqrt(count));
-  const top = 2;
-  resizeGrid(
-    Math.max(DEFAULT_COLS, 2 * pyramidRows + 5),
-    Math.max(DEFAULT_ROWS, pyramidRows + top + 2),
-  );
+  const boardRows = Math.max(DEFAULT_ROWS, 2 * pyramidRows + 4);
+  const top = Math.floor((boardRows - pyramidRows) / 2);
+  resizeGrid(Math.max(DEFAULT_COLS, 2 * pyramidRows + 5), boardRows);
 
   const center = Math.floor(cols / 2);
   for (let r = 0; r < pyramidRows; r++) {
     const base = (top + r) * cols;
     cells.fill(1, base + center - r, base + center + r + 1);
   }
-  if (parsed && parsed > BigInt(MAX_PYRAMIDE))
+  if (requested && requested > BigInt(MAX_PYRAMIDE))
     flash(`Pyramide limitée à ${MAX_PYRAMIDE.toLocaleString()} nombres`);
+  refresh();
+  fitToCells();
+}
+
+/** Square of side ⌊√N⌋, centred; the N − side² left-over cells form one row below it. Empty N gives a 10×10 square. */
+function generateSquare(requested: bigint | null) {
+  clearFermat();
+  if (requested && requested > BigInt(MAX_PYRAMIDE))
+    flash(`Carré limité à ${MAX_PYRAMIDE.toLocaleString()} nombres`);
+  const count =
+    !requested || requested < 1n
+      ? DEFAULT_CARRE_SIDE * DEFAULT_CARRE_SIDE
+      : requested > BigInt(MAX_PYRAMIDE)
+        ? MAX_PYRAMIDE
+        : Number(requested);
+  const side = Math.floor(Math.sqrt(count));
+  const extra = count - side * side;
+  const width = Math.max(side, extra);
+  const height = side + (extra ? 1 : 0);
+  const boardRows = Math.max(DEFAULT_ROWS, height + 4);
+  resizeGrid(Math.max(DEFAULT_COLS, width + 5), boardRows);
+
+  const r0 = Math.floor((boardRows - height) / 2);
+  const c0 = Math.floor((cols - width) / 2);
+  if (extra) cells.fill(1, (r0 + side) * cols + c0, (r0 + side) * cols + c0 + extra);
+  for (let r = 0; r < side; r++) {
+    const base = (r0 + r) * cols;
+    cells.fill(1, base + c0, base + c0 + side);
+  }
   refresh();
   fitToCells();
 }
@@ -719,13 +790,6 @@ function clearFermat() {
   scheduleRender();
 }
 
-function initialView() {
-  scale = DEFAULT_SCALE;
-  ox = (vw - cols * scale) / 2;
-  oy = viewport().top;
-  scheduleRender();
-}
-
 /* ---------- Pointer & keyboard ---------- */
 
 type Drag =
@@ -755,6 +819,10 @@ function setCell(i: number, value: 0 | 1) {
   if (i < 0 || cells[i] === value) return;
   clearFermat();
   cells[i] = value;
+  if (value) {
+    const moved = growAround(i);
+    if (drag?.kind === "draw") drag.last = moved;
+  }
   refresh();
 }
 
@@ -923,10 +991,11 @@ window.addEventListener("keyup", (e) => {
 /* ---------- Wiring ---------- */
 
 $("reset").addEventListener("click", resetGrid);
-$("pyramide").addEventListener("click", generatePyramide);
+$("pyramide").addEventListener("click", () => generatePyramide(parseBigInt(nInput.value)));
+$("carre").addEventListener("click", () => generateSquare(parseBigInt(nInput.value)));
 $("fermat").addEventListener("click", generateFermat);
 $("focusN").addEventListener("click", focusN);
-$("fit").addEventListener("click", fitToCells);
+$("fit").addEventListener("click", () => fitToCells());
 $("zoomIn").addEventListener("click", () => zoomAt(vw / 2, vh / 2, 1.5));
 $("zoomOut").addEventListener("click", () => zoomAt(vw / 2, vh / 2, 1 / 1.5));
 modeDrawBtn.addEventListener("click", () => setMode("draw"));
@@ -960,5 +1029,4 @@ window.addEventListener("resize", resizeCanvas);
 /* Initialization */
 setMode("draw");
 resizeCanvas();
-refresh();
-initialView();
+generatePyramide(BigInt(DEFAULT_PYRAMIDE));

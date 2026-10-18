@@ -17,7 +17,7 @@
         <label for="init">Init</label>
         <div class="stepper">
           <button type="button" class="btn btn-icon" id="decrement" aria-label="Init − 1">−</button>
-          <input type="text" inputmode="numeric" id="init" value="1" autocomplete="off" />
+          <input type="number" inputmode="numeric" id="init" value="1" autocomplete="off" />
           <button type="button" class="btn btn-icon" id="increment" aria-label="Init + 1">+</button>
         </div>
       </div>
@@ -26,7 +26,7 @@
         <span class="label">p × q</span>
         <div class="pq">
           <input
-            type="text"
+            type="number"
             inputmode="numeric"
             placeholder="p"
             id="p"
@@ -35,7 +35,7 @@
           />
           ×
           <input
-            type="text"
+            type="number"
             inputmode="numeric"
             placeholder="q"
             id="q"
@@ -49,7 +49,7 @@
 
       <div class="field">
         <label for="n">N</label>
-        <input type="text" inputmode="numeric" placeholder="N" id="n" autocomplete="off" />
+        <input type="number" inputmode="numeric" placeholder="N" id="n" autocomplete="off" />
       </div>
 
       <div class="field">
@@ -79,6 +79,14 @@
           title="Pyramide de N nombres (max 1 000 000)"
         >
           Pyramide (N)
+        </button>
+        <button
+          type="button"
+          class="btn"
+          id="carre"
+          title="Carré le plus grand ≤ N, les cases restantes forment une ligne au-dessus"
+        >
+          Carré (N)
         </button>
         <button type="button" class="btn" id="focusN" title="Centrer la vue sur N">Voir N</button>
         <button type="button" class="btn" id="reset">Reset</button>

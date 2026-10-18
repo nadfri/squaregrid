@@ -2,6 +2,7 @@ import "./styles/theme.css";
 import "./styles/square.css";
 import { gcd, parseBigInt } from "./lib/bigint.ts";
 import { isPrime } from "./lib/primality.ts";
+import { bindArrowStep } from "./lib/arrow-step.ts";
 import type { FactorResult } from "./lib/factor.ts";
 import type { FactorMessage, FactorRequest, Method } from "./factor.worker.ts";
 
@@ -198,5 +199,7 @@ inputQ.oninput = calculN;
 inputN.oninput = onInputN;
 btnFind.onclick = () => find();
 btnLehman.onclick = () => find(["lehman"]);
+
+[inputP, inputQ, inputN].forEach((input) => bindArrowStep(input));
 
 calculN();
