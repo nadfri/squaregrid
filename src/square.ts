@@ -13,7 +13,6 @@ const inputP = $<HTMLInputElement>("inputP");
 const inputQ = $<HTMLInputElement>("inputQ");
 const inputN = $<HTMLInputElement>("inputN");
 const inputCoef = $<HTMLInputElement>("inputCoef");
-const inputPowCoef = $<HTMLInputElement>("inputPowCoef");
 const spanN = $("spanN");
 const spanN2 = $("spanN2");
 const spanDigits = $("spanDigits");
@@ -64,17 +63,14 @@ function setN(value: bigint, base = value) {
 
 function calculN() {
   inputCoef.value = "";
-  inputPowCoef.value = "";
   setN((read(inputP) || 1n) * (read(inputQ) || 1n));
   spanN.textContent = fmt(N);
   inputN.value = N.toString();
 }
 
 function calculNCoef() {
-  if (inputPowCoef.valueAsNumber < 1) inputPowCoef.valueAsNumber = 1;
-  const pow = read(inputPowCoef) || 2n;
   const base = read(inputN) || 1n;
-  setN(base * (read(inputCoef) || 1n) ** pow, base);
+  setN(base * (read(inputCoef) || 1n), base);
   console.log("N with coef", N);
 }
 
@@ -82,7 +78,6 @@ function onInputN() {
   inputP.value = "";
   inputQ.value = "";
   inputCoef.value = "";
-  inputPowCoef.value = "";
   spanN.textContent = "";
   setN(read(inputN) || 1n);
 }
@@ -193,7 +188,6 @@ function find(requested?: Method[]) {
 
 form.onsubmit = (e) => e.preventDefault();
 inputCoef.oninput = calculNCoef;
-inputPowCoef.oninput = calculNCoef;
 inputP.oninput = calculN;
 inputQ.oninput = calculN;
 inputN.oninput = onInputN;

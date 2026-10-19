@@ -16,9 +16,18 @@
       <div class="field">
         <label for="init">Init</label>
         <div class="stepper">
-          <button type="button" class="btn btn-icon" id="decrement" aria-label="Init − 1">−</button>
-          <input type="number" inputmode="numeric" id="init" value="1" autocomplete="off" />
-          <button type="button" class="btn btn-icon" id="increment" aria-label="Init + 1">+</button>
+          <button type="button" class="btn btn-icon" id="decrement" aria-label="Init − 1">
+            −
+          </button>
+          <input
+            type="number"
+            inputmode="numeric"
+            id="init"
+            value="1"
+            autocomplete="off" />
+          <button type="button" class="btn btn-icon" id="increment" aria-label="Init + 1">
+            +
+          </button>
         </div>
       </div>
 
@@ -31,8 +40,7 @@
             placeholder="p"
             id="p"
             aria-label="p"
-            autocomplete="off"
-          />
+            autocomplete="off" />
           ×
           <input
             type="number"
@@ -40,8 +48,7 @@
             placeholder="q"
             id="q"
             aria-label="q"
-            autocomplete="off"
-          />
+            autocomplete="off" />
           =
           <output id="pq" class="num" for="p q"></output>
         </div>
@@ -49,7 +56,12 @@
 
       <div class="field">
         <label for="n">N</label>
-        <input type="number" inputmode="numeric" placeholder="N" id="n" autocomplete="off" />
+        <input
+          type="number"
+          inputmode="numeric"
+          placeholder="N"
+          id="n"
+          autocomplete="off" />
       </div>
 
       <div class="field">
@@ -59,8 +71,7 @@
           id="moduli"
           placeholder="ex. 8, 3, 5"
           title="Grise les cases qui ne peuvent pas être un carré modulo m (plusieurs m séparés par des virgules)"
-          autocomplete="off"
-        />
+          autocomplete="off" />
       </div>
 
       <div class="toolbar-actions">
@@ -68,27 +79,26 @@
           type="button"
           class="btn btn-primary"
           id="fermat"
-          title="N au sommet puis des lignes de 1, 3, 5… : la ligne X se termine sur N + X²"
-        >
+          title="N au sommet puis des lignes de 1, 3, 5… : la ligne X se termine sur N + X²">
           Pyramide de Fermat (N)
         </button>
         <button
           type="button"
           class="btn"
           id="pyramide"
-          title="Pyramide de N nombres (max 1 000 000)"
-        >
+          title="Pyramide de N nombres (max 1 000 000)">
           Pyramide (N)
         </button>
         <button
           type="button"
           class="btn"
           id="carre"
-          title="Carré le plus grand ≤ N, les cases restantes forment une ligne au-dessus"
-        >
+          title="Carré le plus grand ≤ N, les cases restantes forment une ligne au-dessus">
           Carré (N)
         </button>
-        <button type="button" class="btn" id="focusN" title="Centrer la vue sur N">Voir N</button>
+        <button type="button" class="btn" id="focusN" title="Centrer la vue sur N">
+          Voir N
+        </button>
         <button type="button" class="btn" id="reset">Reset</button>
         <a class="btn" href="square.html">Factoriser →</a>
       </div>
@@ -120,20 +130,50 @@
         <span class="status" id="status" aria-live="polite"></span>
       </div>
       <div class="segmented" role="group" aria-label="Outil">
-        <button type="button" id="modeDraw" aria-pressed="true" title="Dessiner (D)">Dessin</button>
+        <button type="button" id="modeDraw" aria-pressed="true" title="Dessiner (D)">
+          Dessin
+        </button>
         <button
           type="button"
           id="modePan"
           aria-pressed="false"
-          title="Déplacer (H ou Espace maintenu)"
-        >
+          title="Déplacer (H ou Espace maintenu)">
           Déplacer
         </button>
+        <button
+          type="button"
+          id="modeSelect"
+          aria-pressed="false"
+          title="Sélectionner (S)">
+          Sélection
+        </button>
       </div>
-      <button type="button" class="btn btn-icon" id="zoomOut" aria-label="Zoom arrière">−</button>
+      <div
+        class="segmented"
+        id="selectionActions"
+        role="group"
+        aria-label="Sélection"
+        hidden>
+        <button type="button" id="selAdd" title="Ajouter les carrés (Entrée)">
+          Ajouter
+        </button>
+        <button type="button" id="selRemove" title="Supprimer les carrés (Suppr)">
+          Supprimer
+        </button>
+        <button type="button" id="selClear" title="Annuler la sélection (Échap)">
+          Annuler
+        </button>
+      </div>
+      <button type="button" class="btn btn-icon" id="zoomOut" aria-label="Zoom arrière">
+        −
+      </button>
       <span id="zoomLevel">100%</span>
-      <button type="button" class="btn btn-icon" id="zoomIn" aria-label="Zoom avant">+</button>
-      <button type="button" class="btn" id="fit" title="Ajuster à la vue (F)">Ajuster</button>
+      <button type="button" class="btn btn-icon" id="zoomIn" aria-label="Zoom avant">
+        +
+      </button>
+      <button type="button" class="btn" id="fit" title="Ajuster à la vue (F)">
+        Ajuster
+      </button>
     </div>
 
     <div class="tooltip glass" id="tooltip" role="tooltip" hidden>

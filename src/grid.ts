@@ -1,38 +1,41 @@
-import "./styles/theme.css";
-import "./styles/grid.css";
-import { isPerfectSquare, isqrt, parseBigInt } from "./lib/bigint.ts";
-import { CellClass, IMPOSSIBLE_SQUARE } from "./lib/cell-class.ts";
-import { allowedResidues, parseModuli, squaresMod } from "./lib/modular.ts";
-import type { ClassifyRequest, ClassifyResponse } from "./classify.worker.ts";
+import './styles/theme.css';
+import './styles/grid.css';
+import { isPerfectSquare, isqrt, parseBigInt } from './lib/bigint.ts';
+import { CellClass, IMPOSSIBLE_SQUARE } from './lib/cell-class.ts';
+import { allowedResidues, parseModuli, squaresMod } from './lib/modular.ts';
+import type { ClassifyRequest, ClassifyResponse } from './classify.worker.ts';
 
-const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
+const $ = <T extends HTMLElement = HTMLElement>(id: string) =>
+  document.getElementById(id) as T;
 
 /* DOM elements */
-const canvas = $<HTMLCanvasElement>("canvas");
-const ctx = canvas.getContext("2d", { alpha: false })!;
-const toolbar = document.querySelector<HTMLElement>(".toolbar")!;
-const initInput = $<HTMLInputElement>("init");
-const nInput = $<HTMLInputElement>("n");
-const pInput = $<HTMLInputElement>("p");
-const qInput = $<HTMLInputElement>("q");
-const pqDisplay = $<HTMLOutputElement>("pq");
-const rowCounter = $("rowCounter");
-const cellCounter = $("cellCounter");
-const statusEl = $("status");
-const zoomLevel = $("zoomLevel");
-const modeDrawBtn = $("modeDraw");
-const modePanBtn = $("modePan");
-const prefixBox = $("prefix");
-const prefixValue = $("prefixValue");
-const tooltip = $("tooltip");
-const tooltipValue = $("tooltipValue");
-const tooltipSwatch = $("tooltipSwatch");
-const tooltipTag = $("tooltipTag");
-const tooltipPos = $("tooltipPos");
-const fermatPanel = $("fermatPanel");
-const fermatBody = $("fermatBody");
-const moduliInput = $<HTMLInputElement>("moduli");
-const tooltipMod = $("tooltipMod");
+const canvas = $<HTMLCanvasElement>('canvas');
+const ctx = canvas.getContext('2d', { alpha: false })!;
+const toolbar = document.querySelector<HTMLElement>('.toolbar')!;
+const initInput = $<HTMLInputElement>('init');
+const nInput = $<HTMLInputElement>('n');
+const pInput = $<HTMLInputElement>('p');
+const qInput = $<HTMLInputElement>('q');
+const pqDisplay = $<HTMLOutputElement>('pq');
+const rowCounter = $('rowCounter');
+const cellCounter = $('cellCounter');
+const statusEl = $('status');
+const zoomLevel = $('zoomLevel');
+const modeDrawBtn = $('modeDraw');
+const modePanBtn = $('modePan');
+const modeSelectBtn = $('modeSelect');
+const selectionActions = $('selectionActions');
+const prefixBox = $('prefix');
+const prefixValue = $('prefixValue');
+const tooltip = $('tooltip');
+const tooltipValue = $('tooltipValue');
+const tooltipSwatch = $('tooltipSwatch');
+const tooltipTag = $('tooltipTag');
+const tooltipPos = $('tooltipPos');
+const fermatPanel = $('fermatPanel');
+const fermatBody = $('fermatBody');
+const moduliInput = $<HTMLInputElement>('moduli');
+const tooltipMod = $('tooltipMod');
 
 /* Constants */
 const DEFAULT_COLS = 150;
@@ -44,7 +47,7 @@ const MAX_FERMAT_ROWS = 1000;
 const MIN_SCALE = 0.2;
 const MAX_SCALE = 200;
 const GRID_MIN_SCALE = 4; // below this, grid lines would be denser than the cells
-const GRID_COLOR = "rgba(148, 163, 184, 0.16)";
+const GRID_COLOR = 'rgba(148, 163, 184, 0.16)';
 const DEFAULT_PYRAMIDE = 100;
 const DEFAULT_CARRE_SIDE = 10;
 const EDGE_MARGIN = 3; // drawing this close to a side grows the board there
@@ -61,27 +64,27 @@ const hexToRgb = (hex: string): [number, number, number] => {
   return [(v >> 16) & 255, (v >> 8) & 255, v & 255];
 };
 const CLASS_VAR: Record<CellClass, string> = {
-  [CellClass.Other]: "--cell-other",
-  [CellClass.Prime]: "--cell-prime",
-  [CellClass.Square]: "--cell-square",
-  [CellClass.Mark]: "--cell-mark",
-  [CellClass.Target]: "--cell-target",
-  [CellClass.Pending]: "--cell-pending",
+  [CellClass.Other]: '--cell-other',
+  [CellClass.Prime]: '--cell-prime',
+  [CellClass.Square]: '--cell-square',
+  [CellClass.Mark]: '--cell-mark',
+  [CellClass.Target]: '--cell-target',
+  [CellClass.Pending]: '--cell-pending',
 };
 const CLASS_LABEL: Record<CellClass, string> = {
-  [CellClass.Other]: "Composé",
-  [CellClass.Prime]: "Premier",
-  [CellClass.Square]: "Carré parfait",
-  [CellClass.Mark]: "p, q ou pq",
-  [CellClass.Target]: "N",
-  [CellClass.Pending]: "Calcul…",
+  [CellClass.Other]: 'Composé',
+  [CellClass.Prime]: 'Premier',
+  [CellClass.Square]: 'Carré parfait',
+  [CellClass.Mark]: 'p, q ou pq',
+  [CellClass.Target]: 'N',
+  [CellClass.Pending]: 'Calcul…',
 };
 const palette = Object.fromEntries(
   Object.entries(CLASS_VAR).map(([cls, name]) => [cls, hexToRgb(cssVar(name))]),
 ) as unknown as Record<CellClass, [number, number, number]>;
-const BG = cssVar("--bg");
-const BOARD = cssVar("--board");
-const MONO = cssVar("--mono");
+const BG = cssVar('--bg');
+const BOARD = cssVar('--board');
+const MONO = cssVar('--mono');
 const boardRgb = hexToRgb(BOARD);
 /** Colors of cells that cannot be squares modulo m: mostly faded into the board. */
 const dimPalette = Object.fromEntries(
@@ -112,8 +115,8 @@ let fermat: {
 } | null = null;
 
 /** One pixel per cell, scaled up with nearest-neighbour when rendering. */
-const bitmap = document.createElement("canvas");
-const bctx = bitmap.getContext("2d")!;
+const bitmap = document.createElement('canvas');
+const bctx = bitmap.getContext('2d')!;
 
 /* View: cell size in CSS px and grid origin in viewport */
 let scale = DEFAULT_SCALE;
@@ -123,8 +126,10 @@ let vw = window.innerWidth;
 let vh = window.innerHeight;
 let dpr = window.devicePixelRatio || 1;
 
-let mode: "draw" | "pan" = "draw";
+let mode: 'draw' | 'pan' | 'select' = 'draw';
 let spaceHeld = false;
+/** Selected cells, inclusive bounds in grid coordinates. */
+let selection: { x0: number; y0: number; x1: number; y1: number } | null = null;
 let hovered = -1;
 let focused = -1;
 
@@ -137,7 +142,7 @@ function readParams() {
   const p = parseBigInt(pInput.value);
   const q = parseBigInt(qInput.value);
   const pq = p !== null && q !== null ? p * q : null;
-  pqDisplay.textContent = pq?.toString() ?? "";
+  pqDisplay.textContent = pq?.toString() ?? '';
   pqDisplay.title = pqDisplay.textContent;
   const marks = [p, q, pq].filter((v): v is bigint => v !== null);
   return { init: readInit(), n, marks };
@@ -152,6 +157,7 @@ function resizeGrid(newCols: number, newRows: number) {
   rowPrefix = new Int32Array(rows + 1);
   hovered = -1;
   focused = -1;
+  selection = null;
 }
 
 /**
@@ -162,9 +168,11 @@ function growAround(i: number): number {
   const x = i % cols;
   const y = Math.floor(i / cols);
   const addLeft = x < EDGE_MARGIN ? Math.min(GROW_STEP, MAX_DIM - cols) : 0;
-  const addRight = x >= cols - EDGE_MARGIN ? Math.min(GROW_STEP, MAX_DIM - cols - addLeft) : 0;
+  const addRight =
+    x >= cols - EDGE_MARGIN ? Math.min(GROW_STEP, MAX_DIM - cols - addLeft) : 0;
   const addTop = y < EDGE_MARGIN ? Math.min(GROW_STEP, MAX_DIM - rows) : 0;
-  const addBottom = y >= rows - EDGE_MARGIN ? Math.min(GROW_STEP, MAX_DIM - rows - addTop) : 0;
+  const addBottom =
+    y >= rows - EDGE_MARGIN ? Math.min(GROW_STEP, MAX_DIM - rows - addTop) : 0;
   if (Math.max(addLeft, addRight, addTop, addBottom) <= 0) return i;
 
   const oldCols = cols;
@@ -172,7 +180,10 @@ function growAround(i: number): number {
   const newRows = rows + addTop + addBottom;
   const next = new Uint8Array(newCols * newRows);
   for (let r = 0; r < rows; r++)
-    next.set(cells.subarray(r * oldCols, (r + 1) * oldCols), (r + addTop) * newCols + addLeft);
+    next.set(
+      cells.subarray(r * oldCols, (r + 1) * oldCols),
+      (r + addTop) * newCols + addLeft,
+    );
   const remap = (c: number) =>
     c < 0 ? c : (Math.floor(c / oldCols) + addTop) * newCols + (c % oldCols) + addLeft;
 
@@ -183,6 +194,13 @@ function growAround(i: number): number {
   hovered = remap(hovered);
   focused = remap(focused);
   specials = specials.map((s) => ({ ...s, i: remap(s.i) }));
+  if (selection)
+    selection = {
+      x0: selection.x0 + addLeft,
+      y0: selection.y0 + addTop,
+      x1: selection.x1 + addLeft,
+      y1: selection.y1 + addTop,
+    };
   ox -= addLeft * scale;
   oy -= addTop * scale;
   return remap(i);
@@ -233,8 +251,8 @@ function cellOfIndex(idx: number): number {
 
 /* ---------- Classification (worker) ---------- */
 
-const worker = new Worker(new URL("./classify.worker.ts", import.meta.url), {
-  type: "module",
+const worker = new Worker(new URL('./classify.worker.ts', import.meta.url), {
+  type: 'module',
 });
 let requestId = 0;
 let inFlight = false;
@@ -256,7 +274,7 @@ function classify() {
     marks,
     moduli: parseModuli(moduliInput.value),
   };
-  statusEl.textContent = "Calcul…";
+  statusEl.textContent = 'Calcul…';
   worker.postMessage(request);
 }
 
@@ -271,7 +289,7 @@ worker.onmessage = ({ data }: MessageEvent<ClassifyResponse>) => {
   });
   rebuildBitmap();
   if (pending) return classify();
-  statusEl.textContent = "";
+  statusEl.textContent = '';
 };
 
 function classOf(idx: number): CellClass {
@@ -357,10 +375,12 @@ function render() {
   drawLabels(range);
   drawSpecialRings();
   drawFermat();
-  outlineCell(focused, cssVar("--cell-target"), 3);
-  outlineCell(hovered, "#ffffff", 2);
+  drawSelection();
+  outlineCell(focused, cssVar('--cell-target'), 3);
+  outlineCell(hovered, '#ffffff', 2);
 
   zoomLevel.textContent = `${Math.round((scale / DEFAULT_SCALE) * 100)}%`;
+  selectionActions.hidden = !selection;
 }
 
 /** Cell borders over the whole board, so empty cells stay visible. */
@@ -407,7 +427,7 @@ function drawLabels({ x0, x1, y0, y1 }: ReturnType<typeof visibleRange>) {
   );
 
   let cut = 0;
-  if (fullFont < MIN_FONT && first.length === last.length && first[0] !== "-") {
+  if (fullFont < MIN_FONT && first.length === last.length && first[0] !== '-') {
     while (cut < first.length - 1 && first[cut] === last[cut]) cut++;
     if (cut > 0) {
       prefixBox.hidden = false;
@@ -415,9 +435,9 @@ function drawLabels({ x0, x1, y0, y1 }: ReturnType<typeof visibleRange>) {
     }
   }
 
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  let currentFont = "";
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  let currentFont = '';
 
   for (let y = y0; y < y1; y++) {
     const base = y * cols;
@@ -427,15 +447,18 @@ function drawLabels({ x0, x1, y0, y1 }: ReturnType<typeof visibleRange>) {
     for (let x = x0; x < x1; x++) {
       if (!cells[base + x]) continue;
       const label = (init + BigInt(idx)).toString().slice(cut);
-      const fontSize = Math.min(scale * 0.42, (scale * 0.88) / (label.length * CHAR_WIDTH));
+      const fontSize = Math.min(
+        scale * 0.42,
+        (scale * 0.88) / (label.length * CHAR_WIDTH),
+      );
       if (fontSize >= MIN_FONT) {
         const font = `600 ${fontSize.toFixed(1)}px ${MONO}`;
         if (font !== currentFont) ctx.font = currentFont = font;
         ctx.fillStyle = isImpossible(idx)
-          ? "rgba(255, 255, 255, 0.35)"
+          ? 'rgba(255, 255, 255, 0.35)'
           : classOf(idx) === CellClass.Target
-            ? "#111827"
-            : "rgba(255, 255, 255, 0.92)";
+            ? '#111827'
+            : 'rgba(255, 255, 255, 0.92)';
         ctx.fillText(label, ox + (x + 0.5) * scale, oy + (y + 0.5) * scale);
       }
       idx++;
@@ -471,11 +494,11 @@ function cellCenter(i: number): [number, number] {
 
 function drawPill(text: string, x: number, y: number, color: string, alignRight = false) {
   ctx.font = `600 12px ${MONO}`;
-  ctx.textAlign = "left";
-  ctx.textBaseline = "middle";
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'middle';
   const w = ctx.measureText(text).width + 12;
   if (alignRight) x -= w;
-  ctx.fillStyle = "rgba(11, 16, 32, 0.85)";
+  ctx.fillStyle = 'rgba(11, 16, 32, 0.85)';
   ctx.strokeStyle = color;
   ctx.lineWidth = 1;
   ctx.beginPath();
@@ -486,16 +509,35 @@ function drawPill(text: string, x: number, y: number, color: string, alignRight 
   ctx.fillText(text, x + 6, y);
 }
 
+function drawSelection() {
+  if (!selection) return;
+  const { x0, y0, x1, y1 } = selection;
+  const x = ox + x0 * scale;
+  const y = oy + y0 * scale;
+  const w = (x1 - x0 + 1) * scale;
+  const h = (y1 - y0 + 1) * scale;
+  ctx.save();
+  ctx.globalAlpha = 0.18;
+  ctx.fillStyle = cssVar('--accent');
+  ctx.fillRect(x, y, w, h);
+  ctx.globalAlpha = 1;
+  ctx.setLineDash([5, 4]);
+  ctx.strokeStyle = cssVar('--accent');
+  ctx.lineWidth = 1.5;
+  ctx.strokeRect(x, y, w, h);
+  ctx.restore();
+}
+
 /** Diagonal N → N + X² (right ends of the rows) and the squares found on it. */
 function drawFermat() {
   if (!fermat) return;
   const [ax, ay] = cellCenter(fermat.apex);
   const [lx, ly] = cellCenter(fermat.last);
-  const squareColor = cssVar("--cell-square");
+  const squareColor = cssVar('--cell-square');
 
   ctx.save();
   ctx.setLineDash([6, 6]);
-  ctx.strokeStyle = "rgba(165, 180, 252, 0.55)";
+  ctx.strokeStyle = 'rgba(165, 180, 252, 0.55)';
   ctx.lineWidth = 2;
   ctx.beginPath();
   ctx.moveTo(ax, ay);
@@ -518,7 +560,13 @@ function drawFermat() {
     const offset = Math.max(14, scale * 0.9);
     // Row X spans 2X − 1 cells ending on the square.
     const [rowLeft] = cellCenter(cell - Math.max(0, 2 * x - 2));
-    drawPill(`X = ${x} ligne${x > 1 ? "s" : ""}`, rowLeft - offset, cy, squareColor, true);
+    drawPill(
+      `X = ${x} ligne${x > 1 ? 's' : ''}`,
+      rowLeft - offset,
+      cy,
+      squareColor,
+      true,
+    );
     if (rank === 0) {
       const n = fermat!.n;
       const big = BigInt(x);
@@ -535,7 +583,12 @@ function outlineCell(i: number, color: string, width: number) {
   ctx.strokeStyle = color;
   ctx.lineWidth = width;
   const pad = Math.min(width, scale / 4);
-  ctx.strokeRect(ox + x * scale - pad / 2, oy + y * scale - pad / 2, scale + pad, scale + pad);
+  ctx.strokeRect(
+    ox + x * scale - pad / 2,
+    oy + y * scale - pad / 2,
+    scale + pad,
+    scale + pad,
+  );
 }
 
 /* ---------- View ---------- */
@@ -592,10 +645,10 @@ function centerOnCell(i: number, minScale: number) {
 
 function focusN() {
   const { init, n } = readParams();
-  if (n === null) return flash("Saisir N");
+  if (n === null) return flash('Saisir N');
   const idx = n - init;
   const i = idx >= 0n && idx < BigInt(filledCount()) ? cellOfIndex(Number(idx)) : -1;
-  if (i < 0) return flash("N est hors de la grille");
+  if (i < 0) return flash('N est hors de la grille');
   focused = i;
   // Enough zoom to read the varying suffix of nearby numbers (the common prefix is shown aside).
   const digits = Math.min(n.toString().length, String(filledCount()).length + 1);
@@ -604,23 +657,39 @@ function focusN() {
 
 function flash(message: string) {
   statusEl.textContent = message;
-  setTimeout(() => statusEl.textContent === message && (statusEl.textContent = ""), 2500);
+  setTimeout(() => statusEl.textContent === message && (statusEl.textContent = ''), 2500);
 }
 
-function setMode(next: "draw" | "pan") {
+function setMode(next: 'draw' | 'pan' | 'select') {
   mode = next;
   canvas.dataset.mode = next;
-  modeDrawBtn.setAttribute("aria-pressed", String(next === "draw"));
-  modePanBtn.setAttribute("aria-pressed", String(next === "pan"));
+  modeDrawBtn.setAttribute('aria-pressed', String(next === 'draw'));
+  modePanBtn.setAttribute('aria-pressed', String(next === 'pan'));
+  modeSelectBtn.setAttribute('aria-pressed', String(next === 'select'));
+  if (next !== 'select') clearSelection();
+}
+
+function clearSelection() {
+  selection = null;
+  scheduleRender();
+}
+
+/** Sets the selected cells to `value`: 1 adds squares, 0 removes them. */
+function applySelection(value: 0 | 1) {
+  if (!selection) return;
+  const { x0, y0, x1, y1 } = selection;
+  for (let y = y0; y <= y1; y++) cells.fill(value, y * cols + x0, y * cols + x1 + 1);
+  clearFermat();
+  refresh();
 }
 
 /* ---------- Actions ---------- */
 
 function resetGrid() {
-  initInput.value = "1";
-  nInput.value = "";
-  pInput.value = "";
-  qInput.value = "";
+  initInput.value = '1';
+  nInput.value = '';
+  pInput.value = '';
+  qInput.value = '';
   clearFermat();
   resizeGrid(DEFAULT_COLS, DEFAULT_ROWS);
   refresh();
@@ -652,7 +721,7 @@ function generatePyramide(requested: bigint | null) {
   fitToCells();
 }
 
-/** Square of side ⌊√N⌋, centred; the N − side² left-over cells form one row below it. Empty N gives a 10×10 square. */
+/** Square of side ⌊√N⌋, centred; the N − side² left-over cells fill rows below it, within its width. */
 function generateSquare(requested: bigint | null) {
   clearFermat();
   if (requested && requested > BigInt(MAX_PYRAMIDE))
@@ -665,17 +734,20 @@ function generateSquare(requested: bigint | null) {
         : Number(requested);
   const side = Math.floor(Math.sqrt(count));
   const extra = count - side * side;
-  const width = Math.max(side, extra);
-  const height = side + (extra ? 1 : 0);
+  const extraRows = Math.ceil(extra / side);
+  const height = side + extraRows;
   const boardRows = Math.max(DEFAULT_ROWS, height + 4);
-  resizeGrid(Math.max(DEFAULT_COLS, width + 5), boardRows);
+  resizeGrid(Math.max(DEFAULT_COLS, side + 5), boardRows);
 
   const r0 = Math.floor((boardRows - height) / 2);
-  const c0 = Math.floor((cols - width) / 2);
-  if (extra) cells.fill(1, (r0 + side) * cols + c0, (r0 + side) * cols + c0 + extra);
+  const c0 = Math.floor((cols - side) / 2);
   for (let r = 0; r < side; r++) {
-    const base = (r0 + r) * cols;
-    cells.fill(1, base + c0, base + c0 + side);
+    const base = (r0 + r) * cols + c0;
+    cells.fill(1, base, base + side);
+  }
+  for (let r = 0; r < extraRows; r++) {
+    const base = (r0 + side + r) * cols + c0;
+    cells.fill(1, base, base + Math.min(side, extra - r * side));
   }
   refresh();
   fitToCells();
@@ -687,9 +759,9 @@ function generateSquare(requested: bigint | null) {
  */
 function generateFermat() {
   const n = parseBigInt(nInput.value);
-  if (n === null || n < 1n) return flash("Saisir N ≥ 1");
+  if (n === null || n < 1n) return flash('Saisir N ≥ 1');
 
-  const solutions: Omit<FermatSolution, "cell">[] = [];
+  const solutions: Omit<FermatSolution, 'cell'>[] = [];
   for (let x = 0; x <= MAX_FERMAT_ROWS && solutions.length < 3; x++) {
     const v = n + BigInt(x) ** 2n;
     if (isPerfectSquare(v)) solutions.push({ x, y: isqrt(v) });
@@ -697,7 +769,10 @@ function generateFermat() {
 
   const shown = solutions.length ? Math.max(solutions[0].x + 2, 6) : MAX_FERMAT_ROWS;
   const top = 2;
-  resizeGrid(Math.max(DEFAULT_COLS, 2 * shown + 6), Math.max(DEFAULT_ROWS, top + shown + 3));
+  resizeGrid(
+    Math.max(DEFAULT_COLS, 2 * shown + 6),
+    Math.max(DEFAULT_ROWS, top + shown + 3),
+  );
   const c = Math.floor((cols - 2) / 2);
   const at = (row: number, col: number) => (top + row) * cols + col;
 
@@ -710,7 +785,9 @@ function generateFermat() {
     rows: shown,
     apex: at(0, c),
     last: at(shown, c + shown),
-    solutions: solutions.filter((s) => s.x <= shown).map((s) => ({ ...s, cell: at(s.x, c + s.x) })),
+    solutions: solutions
+      .filter((s) => s.x <= shown)
+      .map((s) => ({ ...s, cell: at(s.x, c + s.x) })),
   };
   renderFermatPanel();
   refresh();
@@ -723,35 +800,35 @@ function renderFermatPanel() {
   const { n, solutions } = fermat;
   const impossible = n % 4n === 2n;
 
-  const line = (text: string, className = "") => {
-    const p = document.createElement("p");
+  const line = (text: string, className = '') => {
+    const p = document.createElement('p');
     p.className = className;
     p.textContent = text;
     fermatBody.append(p);
     return p;
   };
 
-  if (impossible) line("N ≡ 2 (mod 4) : N + X² n’est jamais un carré.", "muted");
+  if (impossible) line('N ≡ 2 (mod 4) : N + X² n’est jamais un carré.', 'muted');
   else if (!solutions.length)
     line(
       `Aucun carré au bout des ${MAX_FERMAT_ROWS} premières lignes : p et q sont éloignés (X > ${MAX_FERMAT_ROWS}). Essaie k·N sur la page Factoriser.`,
-      "muted",
+      'muted',
     );
 
   for (const { x, y, cell } of solutions) {
     const big = BigInt(x);
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "solution";
-    const title = document.createElement("span");
-    title.className = "num";
-    title.textContent = `X = ${x} ligne${x > 1 ? "s" : ""} → ${n} + ${x}² = ${y}²`;
-    const result = document.createElement("span");
-    result.className = "num result";
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'solution';
+    const title = document.createElement('span');
+    title.className = 'num';
+    title.textContent = `X = ${x} ligne${x > 1 ? 's' : ''} → ${n} + ${x}² = ${y}²`;
+    const result = document.createElement('span');
+    result.className = 'num result';
     const p = y - big;
-    result.textContent = `p = ${y} − ${x} = ${p} · q = ${y} + ${x} = ${y + big}${p === 1n ? " (triviale)" : ""}`;
+    result.textContent = `p = ${y} − ${x} = ${p} · q = ${y} + ${x} = ${y + big}${p === 1n ? ' (triviale)' : ''}`;
     button.append(title, result);
-    button.addEventListener("click", () => centerOnCell(cell, 36));
+    button.addEventListener('click', () => centerOnCell(cell, 36));
     fermatBody.append(button);
   }
   renderModularHints(line);
@@ -764,12 +841,15 @@ function renderModularHints(line: (text: string, className?: string) => HTMLElem
   if (!fermat || !moduli.length) return;
   const { n, rows } = fermat;
 
-  line("Filtre modulo m (bord droit N + X²)", "hint-title");
+  line('Filtre modulo m (bord droit N + X²)', 'hint-title');
   for (const m of moduli) {
     const allowed = allowedResidues(n, m);
     const shown =
-      allowed.length > 12 ? `${allowed.slice(0, 12).join(", ")}, …` : allowed.join(", ");
-    line(`mod ${m} : X ≡ ${shown || "∅"}  (${allowed.length}/${m} possibles)`, "num muted");
+      allowed.length > 12 ? `${allowed.slice(0, 12).join(', ')}, …` : allowed.join(', ');
+    line(
+      `mod ${m} : X ≡ ${shown || '∅'}  (${allowed.length}/${m} possibles)`,
+      'num muted',
+    );
   }
 
   let alive = 0;
@@ -793,9 +873,10 @@ function clearFermat() {
 /* ---------- Pointer & keyboard ---------- */
 
 type Drag =
-  | { kind: "draw"; value: 0 | 1; last: number }
-  | { kind: "pan"; x: number; y: number }
-  | { kind: "pinch"; dist: number; mx: number; my: number };
+  | { kind: 'draw'; value: 0 | 1; last: number }
+  | { kind: 'pan'; x: number; y: number }
+  | { kind: 'select'; ax: number; ay: number }
+  | { kind: 'pinch'; dist: number; mx: number; my: number };
 
 const pointers = new Map<number, { x: number; y: number }>();
 let drag: Drag | null = null;
@@ -804,6 +885,13 @@ function cellAt(clientX: number, clientY: number): number {
   const x = Math.floor((clientX - ox) / scale);
   const y = Math.floor((clientY - oy) / scale);
   return x >= 0 && x < cols && y >= 0 && y < rows ? y * cols + x : -1;
+}
+
+function cellXYAt(clientX: number, clientY: number) {
+  return {
+    x: Math.min(cols - 1, Math.max(0, Math.floor((clientX - ox) / scale))),
+    y: Math.min(rows - 1, Math.max(0, Math.floor((clientY - oy) / scale))),
+  };
 }
 
 function pinchState() {
@@ -821,54 +909,72 @@ function setCell(i: number, value: 0 | 1) {
   cells[i] = value;
   if (value) {
     const moved = growAround(i);
-    if (drag?.kind === "draw") drag.last = moved;
+    if (drag?.kind === 'draw') drag.last = moved;
   }
   refresh();
 }
 
-canvas.addEventListener("pointerdown", (e) => {
+canvas.addEventListener('pointerdown', (e) => {
   canvas.setPointerCapture(e.pointerId);
   pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
   hideTooltip();
 
   if (pointers.size === 2) {
-    drag = { kind: "pinch", ...pinchState() };
+    drag = { kind: 'pinch', ...pinchState() };
     return;
   }
-  if (mode === "pan" || spaceHeld || e.button === 1) {
-    drag = { kind: "pan", x: e.clientX, y: e.clientY };
-    canvas.dataset.dragging = "pan";
+  if (mode === 'pan' || spaceHeld || e.button === 1) {
+    drag = { kind: 'pan', x: e.clientX, y: e.clientY };
+    canvas.dataset.dragging = 'pan';
+    return;
+  }
+  if (mode === 'select') {
+    if (e.button !== 0 || cellAt(e.clientX, e.clientY) < 0) return;
+    const { x, y } = cellXYAt(e.clientX, e.clientY);
+    drag = { kind: 'select', ax: x, ay: y };
+    selection = { x0: x, y0: y, x1: x, y1: y };
+    scheduleRender();
     return;
   }
   const i = cellAt(e.clientX, e.clientY);
   if (i < 0 || e.button !== 0) return;
   const value = cells[i] ? 0 : 1;
-  drag = { kind: "draw", value, last: i };
+  drag = { kind: 'draw', value, last: i };
   setCell(i, value);
 });
 
-canvas.addEventListener("pointermove", (e) => {
-  if (pointers.has(e.pointerId)) pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+canvas.addEventListener('pointermove', (e) => {
+  if (pointers.has(e.pointerId))
+    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
 
-  if (drag?.kind === "pinch" && pointers.size === 2) {
+  if (drag?.kind === 'pinch' && pointers.size === 2) {
     const next = pinchState();
     ox += next.mx - drag.mx;
     oy += next.my - drag.my;
     zoomAt(next.mx, next.my, next.dist / drag.dist);
-    drag = { kind: "pinch", ...next };
-  } else if (drag?.kind === "pan") {
+    drag = { kind: 'pinch', ...next };
+  } else if (drag?.kind === 'pan') {
     ox += e.clientX - drag.x;
     oy += e.clientY - drag.y;
     drag.x = e.clientX;
     drag.y = e.clientY;
     scheduleRender();
-  } else if (drag?.kind === "draw") {
+  } else if (drag?.kind === 'select') {
+    const { x, y } = cellXYAt(e.clientX, e.clientY);
+    selection = {
+      x0: Math.min(drag.ax, x),
+      y0: Math.min(drag.ay, y),
+      x1: Math.max(drag.ax, x),
+      y1: Math.max(drag.ay, y),
+    };
+    scheduleRender();
+  } else if (drag?.kind === 'draw') {
     const i = cellAt(e.clientX, e.clientY);
     if (i !== drag.last) {
       drag.last = i;
       setCell(i, drag.value);
     }
-  } else if (e.pointerType === "mouse") {
+  } else if (e.pointerType === 'mouse') {
     updateHover(e.clientX, e.clientY);
   }
 });
@@ -876,15 +982,15 @@ canvas.addEventListener("pointermove", (e) => {
 const endPointer = (e: PointerEvent) => {
   pointers.delete(e.pointerId);
   if (pointers.size === 0) drag = null;
-  else if (pointers.size === 1 && drag?.kind === "pinch") {
+  else if (pointers.size === 1 && drag?.kind === 'pinch') {
     const [p] = pointers.values();
-    drag = { kind: "pan", x: p.x, y: p.y };
+    drag = { kind: 'pan', x: p.x, y: p.y };
   }
   delete canvas.dataset.dragging;
 };
-canvas.addEventListener("pointerup", endPointer);
-canvas.addEventListener("pointercancel", endPointer);
-canvas.addEventListener("pointerleave", () => {
+canvas.addEventListener('pointerup', endPointer);
+canvas.addEventListener('pointercancel', endPointer);
+canvas.addEventListener('pointerleave', () => {
   hovered = -1;
   hideTooltip();
   scheduleRender();
@@ -892,10 +998,11 @@ canvas.addEventListener("pointerleave", () => {
 
 // Mouse wheel and trackpad pinch (ctrlKey) zoom; trackpad two-finger scrolling pans.
 const isMouseWheel = (e: WheelEvent) =>
-  e.deltaMode !== WheelEvent.DOM_DELTA_PIXEL || (e.deltaX === 0 && Math.abs(e.deltaY) >= 40);
+  e.deltaMode !== WheelEvent.DOM_DELTA_PIXEL ||
+  (e.deltaX === 0 && Math.abs(e.deltaY) >= 40);
 
 canvas.addEventListener(
-  "wheel",
+  'wheel',
   (e) => {
     e.preventDefault();
     hideTooltip();
@@ -933,11 +1040,11 @@ function updateHover(clientX: number, clientY: number) {
   tooltipPos.textContent = `Ligne ${Math.floor(next / cols) + 1} · colonne ${(next % cols) + 1} · #${(idx + 1).toLocaleString()}`;
   const residues = parseModuli(moduliInput.value).map((m) => {
     const r = Number(abs % BigInt(m));
-    return `≡ ${r} (mod ${m})${squaresMod(m)[r] ? "" : " ✗"}`;
+    return `≡ ${r} (mod ${m})${squaresMod(m)[r] ? '' : ' ✗'}`;
   });
   tooltipMod.textContent = residues.length
-    ? `${residues.join(" · ")}${isImpossible(idx) ? " → pas un carré" : ""}`
-    : "";
+    ? `${residues.join(' · ')}${isImpossible(idx) ? ' → pas un carré' : ''}`
+    : '';
   tooltipMod.hidden = !residues.length;
   tooltip.hidden = false;
 
@@ -953,36 +1060,49 @@ function hideTooltip() {
 
 const isTyping = () => document.activeElement instanceof HTMLInputElement;
 
-window.addEventListener("keydown", (e) => {
+window.addEventListener('keydown', (e) => {
   if (isTyping() || e.metaKey || e.ctrlKey || e.altKey) return;
   switch (e.key) {
-    case " ":
+    case ' ':
       e.preventDefault();
       spaceHeld = true;
-      canvas.dataset.mode = "pan";
+      canvas.dataset.mode = 'pan';
       break;
-    case "+":
-    case "=":
+    case '+':
+    case '=':
       zoomAt(vw / 2, vh / 2, 1.5);
       break;
-    case "-":
+    case '-':
       zoomAt(vw / 2, vh / 2, 1 / 1.5);
       break;
-    case "f":
-    case "0":
+    case 'f':
+    case '0':
       fitToCells();
       break;
-    case "d":
-      setMode("draw");
+    case 'd':
+      setMode('draw');
       break;
-    case "h":
-      setMode("pan");
+    case 'h':
+      setMode('pan');
+      break;
+    case 's':
+      setMode('select');
+      break;
+    case 'Enter':
+      if (selection) applySelection(1);
+      break;
+    case 'Delete':
+    case 'Backspace':
+      if (selection) applySelection(0);
+      break;
+    case 'Escape':
+      clearSelection();
       break;
   }
 });
 
-window.addEventListener("keyup", (e) => {
-  if (e.key === " ") {
+window.addEventListener('keyup', (e) => {
+  if (e.key === ' ') {
     spaceHeld = false;
     canvas.dataset.mode = mode;
   }
@@ -990,43 +1110,49 @@ window.addEventListener("keyup", (e) => {
 
 /* ---------- Wiring ---------- */
 
-$("reset").addEventListener("click", resetGrid);
-$("pyramide").addEventListener("click", () => generatePyramide(parseBigInt(nInput.value)));
-$("carre").addEventListener("click", () => generateSquare(parseBigInt(nInput.value)));
-$("fermat").addEventListener("click", generateFermat);
-$("focusN").addEventListener("click", focusN);
-$("fit").addEventListener("click", () => fitToCells());
-$("zoomIn").addEventListener("click", () => zoomAt(vw / 2, vh / 2, 1.5));
-$("zoomOut").addEventListener("click", () => zoomAt(vw / 2, vh / 2, 1 / 1.5));
-modeDrawBtn.addEventListener("click", () => setMode("draw"));
-modePanBtn.addEventListener("click", () => setMode("pan"));
+$('reset').addEventListener('click', resetGrid);
+$('pyramide').addEventListener('click', () =>
+  generatePyramide(parseBigInt(nInput.value)),
+);
+$('carre').addEventListener('click', () => generateSquare(parseBigInt(nInput.value)));
+$('fermat').addEventListener('click', generateFermat);
+$('focusN').addEventListener('click', focusN);
+$('fit').addEventListener('click', () => fitToCells());
+$('zoomIn').addEventListener('click', () => zoomAt(vw / 2, vh / 2, 1.5));
+$('zoomOut').addEventListener('click', () => zoomAt(vw / 2, vh / 2, 1 / 1.5));
+modeDrawBtn.addEventListener('click', () => setMode('draw'));
+modePanBtn.addEventListener('click', () => setMode('pan'));
+modeSelectBtn.addEventListener('click', () => setMode('select'));
+$('selAdd').addEventListener('click', () => applySelection(1));
+$('selRemove').addEventListener('click', () => applySelection(0));
+$('selClear').addEventListener('click', clearSelection);
 
-$("decrement").addEventListener("click", () => {
+$('decrement').addEventListener('click', () => {
   clearFermat();
   initInput.value = (readInit() - 1n).toString();
   classify();
 });
-$("increment").addEventListener("click", () => {
+$('increment').addEventListener('click', () => {
   clearFermat();
   initInput.value = (readInit() + 1n).toString();
   classify();
 });
 
-[nInput, initInput].forEach((input) => input.addEventListener("input", clearFermat));
+[nInput, initInput].forEach((input) => input.addEventListener('input', clearFermat));
 
 [nInput, pInput, qInput, initInput, moduliInput].forEach((input) => {
-  input.addEventListener("input", () => {
+  input.addEventListener('input', () => {
     focused = -1;
     classify();
     scheduleRender();
   });
 });
 
-moduliInput.addEventListener("input", renderFermatPanel);
+moduliInput.addEventListener('input', renderFermatPanel);
 
-window.addEventListener("resize", resizeCanvas);
+window.addEventListener('resize', resizeCanvas);
 
 /* Initialization */
-setMode("draw");
+setMode('draw');
 resizeCanvas();
 generatePyramide(BigInt(DEFAULT_PYRAMIDE));
